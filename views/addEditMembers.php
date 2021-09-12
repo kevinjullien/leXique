@@ -56,7 +56,7 @@
         <?php } ?>
         <h3>Liste des membres:</h3> (Seuls les membres non administrateurs peuvent être édités)
         <br><br>
-        <table class="table table-striped">
+        <table class="table">
             <thead>
             <tr>
                 <th scope="col">Utilisateur</th>

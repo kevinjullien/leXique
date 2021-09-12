@@ -7,7 +7,7 @@ document.onreadystatechange = function () {
         searchbar.addEventListener("keyup", () => {
             let val = searchbar.value.toLowerCase();
             Array.from(tableRowList).forEach((tr) => {
-                if(tr.rowIndex !== 0) {
+                if(tr.rowIndex !== 0 && tr.className !== "letterDivision") {
                 let found = false;
                 let column = 0;
                 let tdList = tr.getElementsByTagName("td")

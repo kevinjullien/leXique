@@ -53,7 +53,7 @@
     </section>
     <br>
     <section class="container-fluid">
-        <table class="table table-striped" id="table">
+        <table class="table" id="table">
             <thead>
             <tr>
                 <th scope="col">Mot</th>
@@ -69,7 +69,13 @@
             </thead>
             <tbody>
             <?php if (isset($mots) && !empty($mots)) {
-                foreach ($mots as $i => $mot) { ?>
+                $previousLetter = NULL;
+                foreach ($mots as $i => $mot) {
+                    $actualLetter = strtoupper($mot->getLibelle()[0]);
+                    if ($actualLetter !== $previousLetter){
+                        $previousLetter = $actualLetter;
+                        echo '<tr class="letterDivision"><th scope="row" colspan="9" class="">' . $actualLetter . '</th></tr>';
+                    }?>
                     <tr class="trays" <?php echo $i%2 == 0 ? 'data-aos="fade-up-right"' : 'data-aos="fade-up-left"' ?> data-data="<?php echo $mot->getLibelle() ?>">
                         <th scope="row"><?php echo $mot->getLibelle(); ?></th>
                         <td><?php echo $mot->getDefinition(); ?></td>

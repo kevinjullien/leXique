@@ -4,7 +4,7 @@
     </section>
     <br>
     <section class="container-fluid">
-        <table class="table table-striped" id="table">
+        <table class="table" id="table">
             <thead>
             <tr>
                 <th scope="col">Mot</th>
@@ -19,7 +19,13 @@
                 <input name="scope" value="words" hidden>
                 <?php if (isset($mots) && !empty($mots)) {
                     $n = 0;
-                    foreach ($mots as $libelle => $definition) { ?>
+                    $previousLetter = NULL;
+                    foreach ($mots as $libelle => $definition) {
+                        $actualLetter = strtoupper($libelle[0]);
+                        if ($actualLetter !== $previousLetter){
+                            $previousLetter = $actualLetter;
+                            echo '<tr class="letterDivision"><th scope="row" colspan="3" class="">' . $actualLetter . '</th></tr>';
+                        }?>
                         <tr class="trays" <?php echo $n++%2 == 0 ? 'data-aos="fade-up-right"' : 'data-aos="fade-up-left"' ?> data-data="<?php echo $libelle ?>">
                             <th scope="row"><?php echo $libelle; ?></th>
                             <td><?php $i = 350;

@@ -3,7 +3,7 @@
         <input class="form-control" id="searchBar" type="text" placeholder="Rechercher">
     </section>
     <section class="container-fluid">
-        <table class="table table-striped" id="table">
+        <table class="table" id="table">
             <thead>
             <tr>
                 <th scope="col">Intitulé</th>

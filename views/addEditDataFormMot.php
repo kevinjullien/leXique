@@ -622,3 +622,4 @@
     } ?>
 </section>
 <script src="<?php echo SCRIPTS_PATH ?>dataForm.js"></script>
+<script src="<?php echo SCRIPTS_PATH ?>enterDontSubmit.js"></script>

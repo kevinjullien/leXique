@@ -21,9 +21,7 @@
         integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
         crossorigin="anonymous"></script>
 
-<!-- ########## Fin Bootstrap ########## -->
-
-<script src="<?php echo SCRIPTS_PATH ?>enterDontSubmit.js"></script>
+<!-- ########## End Bootstrap ########## -->
 
 <!-- Bootstrap tooltip activation -->
 <script type="application/javascript">$(function () {

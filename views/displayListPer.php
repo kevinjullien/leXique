@@ -19,10 +19,15 @@
             <form action="/index.php?action=display" method="get">
                 <input name="action" value="display" hidden>
                 <input name="scope" value="per" hidden>
-                <?php
-                foreach ($cPer as $i => $per) {
-                    if (empty($per->getDescription()) && empty($per->getDebut()) && empty($per->getFin())) continue; ?>
-                    <tr class="trays" <?php echo $i%2 == 0 ? 'data-aos="fade-up-right"' : 'data-aos="fade-up-left"' ?> data-data="<?php echo $per->getNom(); ?>">
+                <?php $previousLetter = NULL;
+                foreach ($periodes as $i => $per) {
+                    $actualLetter = strtoupper($per->getNom()[0]);
+                    if ($actualLetter !== $previousLetter){
+                        $previousLetter = $actualLetter;
+                        echo '<tr class="letterDivision" data-aos="flip-left"><th scope="row" colspan="5">' . $actualLetter . '</th></tr>';
+                    }?>
+                    <tr class="trays" <?php echo $i % 2 == 0 ? 'data-aos="fade-up-right"' : 'data-aos="fade-up-left"' ?>
+                        data-data="<?php echo $per->getNom(); ?>">
                         <th scope="row"><?php echo $per->getNom(); ?></th>
                         <td><?php echo $per->getDebut(); ?></td>
                         <td><?php echo $per->getFin(); ?></td>

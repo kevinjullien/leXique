@@ -18,8 +18,13 @@
                 <input name="action" value="display" hidden>
                 <input name="scope" value="lex" hidden>
                 <?php
-                foreach ($cLex as $i => $lex) {
-                    if (empty($lex->getDescription())) continue; ?>
+                $previousLetter = NULL;
+                foreach ($champsLexicaux as $i => $lex) {
+                    $actualLetter = strtoupper($lex->getIntitule()[0]);
+                    if ($actualLetter !== $previousLetter){
+                        $previousLetter = $actualLetter;
+                        echo '<tr class="letterDivision" data-aos="flip-left"><th scope="row" colspan="3">' . $actualLetter . '</th></tr>';
+                    }?>
                     <tr class="trays" <?php echo $i%2 == 0 ? 'data-aos="fade-up-right"' : 'data-aos="fade-up-left"' ?> data-data="<?php echo $lex->getIntitule(); ?>">
                         <th scope="row"><?php echo $lex->getIntitule(); ?></th>
                         <td><?php $i = 350;

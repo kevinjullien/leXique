@@ -1623,7 +1623,7 @@ class Db
      */
     public function select_complete_champs_lexicaux(): array
     {
-        $query = 'SELECT id, intitule, description FROM lexique_champs_lexicaux';
+        $query = 'SELECT id, intitule, description FROM lexique_champs_lexicaux ORDER BY 2';
 
         $ps = $this->_db->prepare($query);
         $ps->execute();
@@ -1672,9 +1672,10 @@ class Db
      *
      * @return array
      */
-    public function select_champs_lexicaux_with_id_intitule_and_description(): array
+    public function select_valid_champs_lexicaux_with_id_intitule_and_description(): array
     {
-        $query = 'SELECT id, intitule, description FROM lexique_champs_lexicaux';
+        $query = "SELECT id, intitule, description FROM lexique_champs_lexicaux WHERE description IS NOT NULL AND STRCMP(description, '<p>&nbsp;</p>')
+                    ORDER BY 2";
 
         $ps = $this->_db->prepare($query);
         $ps->execute();
@@ -1743,7 +1744,7 @@ class Db
      */
     public function select_complete_periodes(): array
     {
-        $query = 'SELECT id, nom, debut, fin, description FROM lexique_periodes';
+        $query = 'SELECT id, nom, debut, fin, description FROM lexique_periodes ORDER BY 2';
 
         $ps = $this->_db->prepare($query);
         $ps->execute();
@@ -1796,7 +1797,8 @@ class Db
      */
     public function select_periodes_with_id_nom_debut_fin_and_description(): array
     {
-        $query = 'SELECT id, nom, debut, fin, description FROM lexique_periodes';
+        $query = "SELECT id, nom, debut, fin, description FROM lexique_periodes WHERE (description IS NOT NULL AND STRCMP(description, '<p>&nbsp;</p>'))
+                    OR debut IS NOT NULL OR fin IS NOT NULL ORDER BY 2";
 
         $ps = $this->_db->prepare($query);
         $ps->execute();

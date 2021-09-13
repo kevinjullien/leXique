@@ -24,7 +24,7 @@
                         $actualLetter = strtoupper($libelle[0]);
                         if ($actualLetter !== $previousLetter){
                             $previousLetter = $actualLetter;
-                            echo '<tr class="letterDivision"><th scope="row" colspan="3" class="">' . $actualLetter . '</th></tr>';
+                            echo '<tr class="letterDivision" data-aos="flip-left"><th scope="row" colspan="3">' . $actualLetter . '</th></tr>';
                         }?>
                         <tr class="trays" <?php echo $n++%2 == 0 ? 'data-aos="fade-up-right"' : 'data-aos="fade-up-left"' ?> data-data="<?php echo $libelle ?>">
                             <th scope="row"><?php echo $libelle; ?></th>

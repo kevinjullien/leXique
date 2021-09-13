@@ -74,7 +74,7 @@
                     $actualLetter = strtoupper($mot->getLibelle()[0]);
                     if ($actualLetter !== $previousLetter){
                         $previousLetter = $actualLetter;
-                        echo '<tr class="letterDivision"><th scope="row" colspan="9" class="">' . $actualLetter . '</th></tr>';
+                        echo '<tr class="letterDivision" data-aos="flip-left"><th scope="row" colspan="9">' . $actualLetter . '</th></tr>';
                     }?>
                     <tr class="trays" <?php echo $i%2 == 0 ? 'data-aos="fade-up-right"' : 'data-aos="fade-up-left"' ?> data-data="<?php echo $mot->getLibelle() ?>">
                         <th scope="row"><?php echo $mot->getLibelle(); ?></th>

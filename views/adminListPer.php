@@ -16,7 +16,13 @@
             </thead>
             <tbody>
             <?php if (isset($periodes) && !empty($periodes)) {
-                foreach ($periodes as $i => $per) { ?>
+                $previousLetter = NULL;
+                foreach ($periodes as $i => $per) {
+                    $actualLetter = strtoupper($per->getNom()[0]);
+                    if ($actualLetter !== $previousLetter){
+                        $previousLetter = $actualLetter;
+                        echo '<tr class="letterDivision" data-aos="flip-left"><th scope="row" colspan="6">' . $actualLetter . '</th></tr>';
+                    }?>
                     <tr class="trays" <?php echo $i%2 == 0 ? 'data-aos="fade-up-right"' : 'data-aos="fade-up-left"' ?> data-data="<?php echo $per->getNom() ?>">
                         <th scope="row"><?php echo $per->getNom(); ?></th>
                         <td><?php echo $per->getDebut(); ?></td>

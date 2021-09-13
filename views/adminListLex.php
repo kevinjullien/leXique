@@ -14,7 +14,13 @@
             </thead>
             <tbody>
             <?php if (isset($champsLexicaux) && !empty($champsLexicaux)) {
-                foreach ($champsLexicaux as $i => $lex) { ?>
+                $previousLetter = NULL;
+                foreach ($champsLexicaux as $i => $lex) {
+                    $actualLetter = strtoupper($lex->getIntitule()[0]);
+                    if ($actualLetter !== $previousLetter){
+                        $previousLetter = $actualLetter;
+                        echo '<tr class="letterDivision" data-aos="flip-left"><th scope="row" colspan="4">' . $actualLetter . '</th></tr>';
+                    }?>
                     <tr class="trays" <?php echo $i%2 == 0 ? 'data-aos="fade-up-right"' : 'data-aos="fade-up-left"' ?> data-data="<?php echo $lex->getIntitule() ?>">
                         <th scope="row"><?php echo $lex->getIntitule(); ?></th>
                         <td><?php echo $lex->getDescription(); ?></td>

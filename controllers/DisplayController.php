@@ -65,38 +65,40 @@ class DisplayController
      * Check if the definition of the given Mot contains any Mot in the given array (as $array['libelle'])
      * If any is found, edit it to be a link to the Mot's page + putting a bit of the Mot's definition in a tooltip
      *
-     * @param array $mots
+     * @param array $motsList
      * @param Mot $chosenMot
      */
-    private function addLinksToKnownWordsInWordDescription(array $mots, Mot $chosenMot): void
+    private function addLinksToKnownWordsInWordDescription(array $motsList, Mot $chosenMot): void
     {
         // previous valid (but probably incomplete) regex attempt: /([a-zàâçéèêëîïôûùüÿæœ0-9\-]+)|(\s+)|([²³&|@#€µ£%\"'+*=~.,:;?!<>\/\\\(){}\[\]\-_]+)/i
         $pattern = "/([a-zàâçéèêëîïôûùüÿæœ0-9\-]+)|(\s+)|(?![a-zàâçéèêëîïôûùüÿæœ0-9\-]+)/i";
         $splittedDefinition = preg_split($pattern, $chosenMot->getDefinition(), -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
         $variants = $this->_db->select_every_variants_with_libelle_and_type();
         $newTab = array();
-        foreach ($splittedDefinition as $i => $token) {
+        $mots = $this->motsToLowerKey($motsList);
+        foreach ($splittedDefinition as $i => $tok) {
+            $token = strtolower($tok);
             if (array_key_exists($token, $mots)) {
-                if ($token === $chosenMot->getLibelle()){
-                    $newTab[] = $token;
+                if ($token === strtolower($chosenMot->getLibelle())){
+                    $newTab[] = $tok;
                     continue;
                 }
                 $limit = 350;
-                $suffix = strlen($mots[$token]) > $limit ? "[........]" : "";
-                $replacement = '<a data-toggle="tooltip" data-html="true" title="' . substr($mots[$token], 0, $limit) . $suffix . '" href="index.php?action=display&scope=words&word=' . htmlspecialchars($token) . '">' . htmlspecialchars($token) . '</a>';
-                $newTab[] = str_replace($token, $replacement, $token);
+                $suffix = strlen($mots[$token]['definition']) > $limit ? "[........]" : "";
+                $replacement = '<a data-toggle="tooltip" data-html="true" title="' . substr($mots[$token]['definition'], 0, $limit) . $suffix . '" href="index.php?action=display&scope=words&word=' . htmlspecialchars($mots[$token]['origin']) . '">' . htmlspecialchars($tok) . '</a>';
+                $newTab[] = $replacement;
             } else if (array_key_exists($token, $variants)) {
-                if ($variants[$token]['mot'] == $chosenMot->getLibelle()){
-                    $newTab[] = $token;
+                if ($token == strtolower($chosenMot->getLibelle())){
+                    $newTab[] = $tok;
                     continue;
                 }
                 $limit = 350;
-                $suffix = strlen($mots[$variants[$token]['mot']]) > $limit ? "[........]" : "";
-                $replacement = '<a data-toggle="tooltip" data-html="true" title="' . substr('<u>Variant <i>' . $variants[$token]['type'] . '</i> de <b>' . $variants[$token]['mot'] . "</b>:</u><br>" .$mots[$variants[$token]['mot']], 0, $limit) . $suffix . '" href="index.php?action=display&scope=words&word=' . htmlspecialchars($variants[$token]['mot']) . '">' . htmlspecialchars($token) . '</a>';
-                $newTab[] = str_replace($token, $replacement, $token);
+                $suffix = strlen($mots[$variants[$token]['mot']]['definition']) > $limit ? "[........]" : "";
+                $replacement = '<a data-toggle="tooltip" data-html="true" title="' . substr('<u>Variant <i>' . $variants[$token]['type'] . '</i> de <b>' . $variants[$token]['mot'] . "</b>:</u><br>" .$mots[$variants[$token]['mot']]['definition'], 0, $limit) . $suffix . '" href="index.php?action=display&scope=words&word=' . htmlspecialchars($variants[$token]['mot']) . '">' . htmlspecialchars($tok) . '</a>';
+                $newTab[] = $replacement;
             }
             else {
-                $newTab[] = $token;
+                $newTab[] = $tok;
             }
         }
         $chosenMot->setDefinition(implode("", $newTab));
@@ -173,5 +175,24 @@ class DisplayController
             }
         }
         $chosenMot->setAntonymes($newTab);
+    }
+
+    /**
+     * Replace the actual table $tab[key] containing the definition as $tab[keyToLowerCase][[origin][definition]]
+     * where the key is the former key to lower case, [origin] is the original key and [definition] is the definition
+     *
+     * @param array $motsList
+     * @return array
+     */
+    private function motsToLowerKey(array $motsList): array
+    {
+        $tab = array();
+        foreach ($motsList as $mot => $definition){
+            $key = strtolower($mot);
+            $tab[$key] = array();
+            $tab[$key]['origin'] = $mot;
+            $tab[$key]['definition'] = $definition;
+        }
+        return $tab;
     }
 }

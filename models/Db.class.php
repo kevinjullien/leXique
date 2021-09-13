@@ -1920,8 +1920,8 @@ class Db
     /**
      * Fetch every Variant with their type and linked Mot
      *
-     * @return array as $array['variantLibelle'][[mot][type]] where the variant's libelle is the key,
-     * ['mot'] contains the Mot's libelle and [type] contains the variant type's libelle
+     * @return array as $array['variantLibelle in lowercase'][[mot][type][origin]] where the variant's libelle is the key in lowercase,
+     * ['mot'] contains the Mot's libelle, ['origin'] contains the original variant with its case and [type] contains the variant type's libelle
      */
     public function select_every_variants_with_libelle_and_type(): array
     {
@@ -1934,9 +1934,11 @@ class Db
         $tab = array();
         if ($ps->rowcount() != 0) {
             while ($row = $ps->fetch()) {
-                $tab[$row->variant] = array();
-                $tab[$row->variant]['mot'] = $row->mot;
-                $tab[$row->variant]['type'] = $row->type;
+                $key = strtolower($row->variant);
+                $tab[$key] = array();
+                $tab[$key]['mot'] = $row->mot;
+                $tab[$key]['type'] = $row->type;
+                $tab[$key]['origin'] = $row->variant;
             }
         }
 

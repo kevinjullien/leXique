@@ -1455,6 +1455,7 @@ class Db
 
         return $this->complete_mots_after_select_on_lexique_mots($qp);
     }
+
     /**
      * Complete multiple Mots after having executed 'SELECT id, libelle, definition, illustration FROM lexique_mots ...'.
      *
@@ -1509,34 +1510,28 @@ class Db
      */
     public function update_reference(Reference $updatedReference): bool
     {
-        $this->_db->beginTransaction();
-        try {
-            $query = 'UPDATE lexique_references_biblio 
+
+        $query = 'UPDATE lexique_references_biblio 
                   SET auteur = :auteur, titre = :titre, editeur = :editeur, lieu_edition = :lieuEdition, 
                       date_edition = :dateEdition, pages = :pages, lien = :lien';
-            if (!empty($updatedReference->getDocument())) {
-                $query = $query . ', document = :document';
-            }
-            $query = $query . ' WHERE id = :id';
-
-            $ps = $this->_db->prepare($query);
-            $ps->bindValue(':id', $updatedReference->getId());
-            $ps->bindValue(':auteur', $updatedReference->getAuteur());
-            $ps->bindValue(':titre', $updatedReference->getTitre());
-            $ps->bindValue(':editeur', $updatedReference->getEditeur());
-            $ps->bindValue(':lieuEdition', $updatedReference->getLieuEdition());
-            $ps->bindValue(':dateEdition', $updatedReference->getDateEdition());
-            $ps->bindValue(':pages', $updatedReference->getPages());
-            $ps->bindValue(':lien', $updatedReference->getLien());
-            if (!empty($updatedReference->getDocument())) {
-                $ps->bindValue(':document', $updatedReference->getDocument());
-            }
-        } catch
-        (Exception $e) {
-            $this->_db->rollBack();
-            throw new Exception($e);
+        if (!empty($updatedReference->getDocument())) {
+            $query = $query . ', document = :document';
         }
-        return $this->_db->commit();
+        $query = $query . ' WHERE id = :id';
+
+        $ps = $this->_db->prepare($query);
+        $ps->bindValue(':id', $updatedReference->getId());
+        $ps->bindValue(':auteur', $updatedReference->getAuteur());
+        $ps->bindValue(':titre', $updatedReference->getTitre());
+        $ps->bindValue(':editeur', $updatedReference->getEditeur());
+        $ps->bindValue(':lieuEdition', $updatedReference->getLieuEdition());
+        $ps->bindValue(':dateEdition', $updatedReference->getDateEdition());
+        $ps->bindValue(':pages', $updatedReference->getPages());
+        $ps->bindValue(':lien', $updatedReference->getLien());
+        if (!empty($updatedReference->getDocument())) {
+            $ps->bindValue(':document', $updatedReference->getDocument());
+        }
+        return $ps->execute();
     }
 
     /**
@@ -1648,31 +1643,6 @@ class Db
     }
 
     /**
-     * Select every Champ Lexical with id, intitule and description.
-     *
-     * @return array
-     */
-    public function select_champs_lexicaux_with_id_intitule_and_description(): array
-    {
-        $query = 'SELECT id, intitule, description FROM lexique_champs_lexicaux';
-
-        $ps = $this->_db->prepare($query);
-        $ps->execute();
-
-        $tab = array();
-        if ($ps->rowcount() != 0) {
-            while ($row = $ps->fetch()) {
-                $lex = new ChampLexical($row->intitule, $row->description);
-                $lex->setId($row->id);
-
-                $tab[] = $lex;
-            }
-        }
-
-        return $tab;
-    }
-
-    /**
      * Fetch every Mot's id linked with a Champ Lexical.
      *
      * @param int $lexId the Champ Lexical's id
@@ -1691,6 +1661,31 @@ class Db
             while ($row = $ps->fetch()) {
                 $mot = $this->select_mot_by_id($row->id);
                 $tab[] = $mot;
+            }
+        }
+
+        return $tab;
+    }
+
+    /**
+     * Select every Champ Lexical with id, intitule and description.
+     *
+     * @return array
+     */
+    public function select_champs_lexicaux_with_id_intitule_and_description(): array
+    {
+        $query = 'SELECT id, intitule, description FROM lexique_champs_lexicaux';
+
+        $ps = $this->_db->prepare($query);
+        $ps->execute();
+
+        $tab = array();
+        if ($ps->rowcount() != 0) {
+            while ($row = $ps->fetch()) {
+                $lex = new ChampLexical($row->intitule, $row->description);
+                $lex->setId($row->id);
+
+                $tab[] = $lex;
             }
         }
 
@@ -1770,6 +1765,31 @@ class Db
     }
 
     /**
+     * Fetch every Mot's id linked to a given Periode
+     *
+     * @param int $perId
+     * @return array
+     */
+    private function select_mots_linked_with_periode(int $perId): array
+    {
+        $query = 'SELECT m.id FROM lexique_mots m, lexique_vue_mot_periode p WHERE p.periode = :perId AND p.mot = m.id';
+
+        $ps = $this->_db->prepare($query);
+        $ps->bindValue(':perId', $perId);
+        $ps->execute();
+
+        $tab = array();
+        if ($ps->rowcount() != 0) {
+            while ($row = $ps->fetch()) {
+                $mot = $this->select_mot_by_id($row->id);
+                $tab[] = $mot;
+            }
+        }
+
+        return $tab;
+    }
+
+    /**
      * Select every existing Periode with their id, nom, debut, fin and description.
      *
      * @return array
@@ -1790,31 +1810,6 @@ class Db
                 $per->setFin($row->fin);
 
                 $tab[] = $per;
-            }
-        }
-
-        return $tab;
-    }
-
-    /**
-     * Fetch every Mot's id linked to a given Periode
-     *
-     * @param int $perId
-     * @return array
-     */
-    private function select_mots_linked_with_periode(int $perId): array
-    {
-        $query = 'SELECT m.id FROM lexique_mots m, lexique_vue_mot_periode p WHERE p.periode = :perId AND p.mot = m.id';
-
-        $ps = $this->_db->prepare($query);
-        $ps->bindValue(':perId', $perId);
-        $ps->execute();
-
-        $tab = array();
-        if ($ps->rowcount() != 0) {
-            while ($row = $ps->fetch()) {
-                $mot = $this->select_mot_by_id($row->id);
-                $tab[] = $mot;
             }
         }
 

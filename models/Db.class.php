@@ -972,7 +972,7 @@ class Db
     }
 
     /**
-     * Select every existing Reference of a word by the given id.
+     * Select every existing Reference of a Mot by the given Mot's id.
      * If the id does not exist, an empty array is returned.
      *
      * @param $motId
@@ -980,8 +980,10 @@ class Db
      */
     public function select_mot_references($motId): array
     {
-        //TODO améliorer requête
-        $query = 'SELECT reference FROM lexique_vue_mot_reference WHERE mot = :motId ORDER BY 1';
+        $query = 'SELECT r.id, r.auteur, r.titre, r.editeur, r.lieu_edition, r.date_edition, r.pages, r.lien, r.document 
+                    FROM lexique_references_biblio r, lexique_vue_mot_reference mr
+                    WHERE mr.mot = :motId AND r.id = mr.reference
+                    ORDER BY r.titre';
 
         $qp = $this->_db->prepare($query);
         $qp->bindValue(':motId', $motId);
@@ -990,29 +992,7 @@ class Db
         $references = array();
         if ($qp->rowcount() != 0) {
             while ($row = $qp->fetch()) {
-                $references[] = $row->reference;
-            }
-        }
-
-        if (empty($references))
-            return $references;
-
-        $query = 'SELECT id, auteur, titre, editeur, lieu_edition, date_edition, pages, lien, document FROM lexique_references_biblio WHERE';
-        foreach ($references as $i => $ref) {
-            if ($i != 0)
-                $query = $query . ' OR';
-            $query = $query . " id = $ref";
-        }
-        $query = $query . ' ORDER BY titre';
-
-        $qp = $this->_db->prepare($query);
-        $qp->execute();
-
-        $references = array();
-        if ($qp->rowcount() != 0) {
-            while ($row = $qp->fetch()) {
-                $reference = $this->constructReferenceFromRow($row);
-                $references[] = $reference;
+                $references[] = $this->constructReferenceFromRow($row);
             }
         }
         return $references;
@@ -1897,9 +1877,9 @@ class Db
      */
     public function select_valid_periodes_with_nom_debut_fin_and_description(): array
     {
-        $query = "SELECT nom, debut, fin, description FROM lexique_periodes WHERE 
-                                                                    (description IS NOT NULL AND STRCMP(description, '<p>&nbsp;</p>'))
-                                                                    OR (debut IS NOT NULL AND STRCMP(debut, '<p>&nbsp;</p>') AND fin IS NOT NULL AND STRCMP(fin, '<p>&nbsp;</p>'))";
+        $query = "SELECT nom, debut, fin, description FROM lexique_periodes 
+                    WHERE (description IS NOT NULL AND STRCMP(description, '<p>&nbsp;</p>'))
+                    OR (debut IS NOT NULL AND STRCMP(debut, '<p>&nbsp;</p>') AND fin IS NOT NULL AND STRCMP(fin, '<p>&nbsp;</p>'))";
 
         $ps = $this->_db->prepare($query);
         $ps->execute();

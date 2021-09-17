@@ -61,13 +61,13 @@ class Db
     {
         $query = 'SELECT pseudo, mot_de_passe, est_admin FROM lexique_utilisateurs WHERE pseudo = :username';
 
-        $qp = $this->_db->prepare($query);
-        $qp->bindValue(':username', $username);
-        $qp->execute();
+        $ps = $this->_db->prepare($query);
+        $ps->bindValue(':username', $username);
+        $ps->execute();
 
         $utilisateur = null;
-        if ($qp->rowcount() != 0) {
-            $row = $qp->fetch();
+        if ($ps->rowcount() != 0) {
+            $row = $ps->fetch();
             $utilisateur = new Utilisateur($row->pseudo, $row->mot_de_passe, $row->est_admin);
         }
 
@@ -83,12 +83,12 @@ class Db
     {
         $query = 'SELECT pseudo, est_admin FROM lexique_utilisateurs ORDER BY 2, 1';
 
-        $qp = $this->_db->prepare($query);
-        $qp->execute();
+        $ps = $this->_db->prepare($query);
+        $ps->execute();
 
         $utilisateurs = array();
-        if ($qp->rowcount() != 0) {
-            while ($row = $qp->fetch()) {
+        if ($ps->rowcount() != 0) {
+            while ($row = $ps->fetch()) {
                 $utilisateurs[] = new Utilisateur($row->pseudo, NULL, $row->est_admin);
             }
         }
@@ -108,12 +108,12 @@ class Db
     {
         $query = 'INSERT INTO lexique_utilisateurs (pseudo, mot_de_passe, est_admin) 
                     VALUES (:username, :password, :isAdmin)';
-        $qp = $this->_db->prepare($query);
-        $qp->bindValue(':username', $username);
-        $qp->bindValue(':password', $password);
-        $qp->bindValue(':isAdmin', $isAdmin, PDO::PARAM_INT);
+        $ps = $this->_db->prepare($query);
+        $ps->bindValue(':username', $username);
+        $ps->bindValue(':password', $password);
+        $ps->bindValue(':isAdmin', $isAdmin, PDO::PARAM_INT);
 
-        return $qp->execute();
+        return $ps->execute();
     }
 
     /**
@@ -125,13 +125,13 @@ class Db
     {
         $query = 'SELECT libelle, definition FROM lexique_mots ORDER BY libelle';
 
-        $qp = $this->_db->prepare($query);
-        $qp->execute();
+        $ps = $this->_db->prepare($query);
+        $ps->execute();
 
         $mots = array();
         $i = 0;
-        if ($qp->rowcount() != 0) {
-            while ($row = $qp->fetch()) {
+        if ($ps->rowcount() != 0) {
+            while ($row = $ps->fetch()) {
                 $mots[$i] = array();
                 $mots[$i]['libelle'] = $row->libelle;
                 $mots[$i++]['definition'] = $row->definition;
@@ -152,13 +152,13 @@ class Db
         $query = 'SELECT libelle, definition FROM lexique_mots 
                     WHERE definition IS NOT NULL AND STRCMP(definition, :invalid) ORDER BY 1';
 
-        $qp = $this->_db->prepare($query);
-        $qp->bindValue(':invalid', self::$invalidString);
-        $qp->execute();
+        $ps = $this->_db->prepare($query);
+        $ps->bindValue(':invalid', self::$invalidString);
+        $ps->execute();
 
         $mots = array();
-        if ($qp->rowcount() != 0) {
-            while ($row = $qp->fetch()) {
+        if ($ps->rowcount() != 0) {
+            while ($row = $ps->fetch()) {
                 $mots[$row->libelle] = $row->definition;
             }
         }
@@ -217,12 +217,12 @@ class Db
     {
         $query = 'SELECT libelle FROM lexique_mots ORDER BY libelle';
 
-        $qp = $this->_db->prepare($query);
-        $qp->execute();
+        $ps = $this->_db->prepare($query);
+        $ps->execute();
 
         $mots = array();
-        if ($qp->rowcount() != 0) {
-            while ($row = $qp->fetch()) {
+        if ($ps->rowcount() != 0) {
+            while ($row = $ps->fetch()) {
                 $mots[] = $row->libelle;
             }
         }
@@ -239,12 +239,12 @@ class Db
     {
         $query = 'SELECT intitule FROM lexique_champs_lexicaux ORDER BY intitule';
 
-        $qp = $this->_db->prepare($query);
-        $qp->execute();
+        $ps = $this->_db->prepare($query);
+        $ps->execute();
 
         $champsLexicaux = array();
-        if ($qp->rowcount() != 0) {
-            while ($row = $qp->fetch()) {
+        if ($ps->rowcount() != 0) {
+            while ($row = $ps->fetch()) {
                 $champsLexicaux[] = $row->intitule;
             }
         }
@@ -261,12 +261,12 @@ class Db
     {
         $query = 'SELECT nom FROM lexique_periodes ORDER BY nom';
 
-        $qp = $this->_db->prepare($query);
-        $qp->execute();
+        $ps = $this->_db->prepare($query);
+        $ps->execute();
 
         $periodes = array();
-        if ($qp->rowcount() != 0) {
-            while ($row = $qp->fetch()) {
+        if ($ps->rowcount() != 0) {
+            while ($row = $ps->fetch()) {
                 $periodes[] = $row->nom;
             }
         }
@@ -283,12 +283,12 @@ class Db
     {
         $query = 'SELECT numero FROM lexique_siecles ORDER BY numero';
 
-        $qp = $this->_db->prepare($query);
-        $qp->execute();
+        $ps = $this->_db->prepare($query);
+        $ps->execute();
 
         $siecles = array();
-        if ($qp->rowcount() != 0) {
-            while ($row = $qp->fetch()) {
+        if ($ps->rowcount() != 0) {
+            while ($row = $ps->fetch()) {
                 $siecles[] = $row->numero;
             }
         }
@@ -305,12 +305,12 @@ class Db
     {
         $query = 'SELECT libelle AS type FROM lexique_variants_ortho_types ORDER BY 1';
 
-        $qp = $this->_db->prepare($query);
-        $qp->execute();
+        $ps = $this->_db->prepare($query);
+        $ps->execute();
 
         $arr = array();
-        if ($qp->rowcount() != 0) {
-            while ($row = $qp->fetch()) {
+        if ($ps->rowcount() != 0) {
+            while ($row = $ps->fetch()) {
                 $arr[] = $row->type;
             }
         }
@@ -332,11 +332,11 @@ class Db
         $query = 'INSERT INTO lexique_mots (libelle, definition, illustration) 
                     VALUES (:libelle, :definition, :illustration)';
 
-        $qp = $this->_db->prepare($query);
-        $qp->bindValue(':libelle', $libelle);
-        $qp->bindValue(':definition', $definition);
-        $qp->bindValue(':illustration', $illustration);
-        $qp->execute();
+        $ps = $this->_db->prepare($query);
+        $ps->bindValue(':libelle', $libelle);
+        $ps->bindValue(':definition', $definition);
+        $ps->bindValue(':illustration', $illustration);
+        $ps->execute();
 
         $this->select_mot_id_from_libelle($libelle);
     }
@@ -351,13 +351,13 @@ class Db
     {
         $query = 'SELECT id FROM lexique_mots WHERE libelle = :libelle;';
 
-        $qp = $this->_db->prepare($query);
-        $qp->bindValue(':libelle', $libelle);
-        $qp->execute();
+        $ps = $this->_db->prepare($query);
+        $ps->bindValue(':libelle', $libelle);
+        $ps->execute();
 
         $id = -1;
-        if ($qp->rowcount() != 0) {
-            while ($row = $qp->fetch()) {
+        if ($ps->rowcount() != 0) {
+            while ($row = $ps->fetch()) {
                 $id = $row->id;
             }
         }
@@ -379,20 +379,20 @@ class Db
             if (!in_array($type, $existingTypes)) {
                 $query = 'INSERT INTO lexique_variants_ortho_types (libelle) VALUES (:libelle)';
 
-                $qp = $this->_db->prepare($query);
-                $qp->bindValue(':libelle', $type);
-                $qp->execute();
+                $ps = $this->_db->prepare($query);
+                $ps->bindValue(':libelle', $type);
+                $ps->execute();
             }
             $typeId = $this->select_variant_type_id_from_libelle($type);
 
             foreach ($values as $i => $variant) {
                 $query = 'INSERT INTO lexique_variants_ortho (libelle, mot, type) VALUES (:libelle, :motId, :typeId)';
 
-                $qp = $this->_db->prepare($query);
-                $qp->bindValue(':libelle', $variant);
-                $qp->bindValue(':motId', $mot->getId());
-                $qp->bindValue(':typeId', $typeId);
-                $qp->execute();
+                $ps = $this->_db->prepare($query);
+                $ps->bindValue(':libelle', $variant);
+                $ps->bindValue(':motId', $mot->getId());
+                $ps->bindValue(':typeId', $typeId);
+                $ps->execute();
             }
         }
     }
@@ -452,11 +452,11 @@ class Db
     {
         $query = 'INSERT INTO lexique_antonymes (mot_a, mot_b) VALUES (:lib, :ant), (:ant, :lib)';
 
-        $qp = $this->_db->prepare($query);
-        $qp->bindValue(':lib', $motId);
-        $qp->bindValue(':ant', $antonymeId);
+        $ps = $this->_db->prepare($query);
+        $ps->bindValue(':lib', $motId);
+        $ps->bindValue(':ant', $antonymeId);
 
-        $qp->execute();
+        $ps->execute();
     }
 
     /**
@@ -490,11 +490,11 @@ class Db
     {
         $query = 'INSERT INTO lexique_synonymes (mot_a, mot_b) VALUES (:lib, :ant), (:ant, :lib)';
 
-        $qp = $this->_db->prepare($query);
-        $qp->bindValue(':lib', $motId);
-        $qp->bindValue(':ant', $synonymeId);
+        $ps = $this->_db->prepare($query);
+        $ps->bindValue(':lib', $motId);
+        $ps->bindValue(':ant', $synonymeId);
 
-        $qp->execute();
+        $ps->execute();
     }
 
     /**
@@ -528,10 +528,10 @@ class Db
     {
         $query = 'INSERT INTO lexique_champs_lexicaux (intitule, description) VALUES (:intitule, :description)';
 
-        $qp = $this->_db->prepare($query);
-        $qp->bindValue(':intitule', $intitule);
-        $qp->bindValue(':description', $description);
-        $qp->execute();
+        $ps = $this->_db->prepare($query);
+        $ps->bindValue(':intitule', $intitule);
+        $ps->bindValue(':description', $description);
+        $ps->execute();
     }
 
     /**
@@ -545,10 +545,10 @@ class Db
     {
         $query = 'INSERT INTO lexique_vue_mot_champ_lexical (mot, champ_lexical) VALUES (:mot, :champLexical)';
 
-        $qp = $this->_db->prepare($query);
-        $qp->bindValue(':mot', $motId);
-        $qp->bindValue(':champLexical', $champLexicalId);
-        $qp->execute();
+        $ps = $this->_db->prepare($query);
+        $ps->bindValue(':mot', $motId);
+        $ps->bindValue(':champLexical', $champLexicalId);
+        $ps->execute();
     }
 
     /**
@@ -561,13 +561,13 @@ class Db
     {
         $query = 'SELECT id FROM lexique_champs_lexicaux WHERE intitule = :intitule;';
 
-        $qp = $this->_db->prepare($query);
-        $qp->bindValue(':intitule', $intitule);
-        $qp->execute();
+        $ps = $this->_db->prepare($query);
+        $ps->bindValue(':intitule', $intitule);
+        $ps->execute();
 
         $id = -1;
-        if ($qp->rowcount() != 0) {
-            while ($row = $qp->fetch()) {
+        if ($ps->rowcount() != 0) {
+            while ($row = $ps->fetch()) {
                 $id = $row->id;
             }
         }
@@ -605,9 +605,9 @@ class Db
     {
         $query = 'INSERT INTO lexique_periodes (nom) VALUES (:nom)';
 
-        $qp = $this->_db->prepare($query);
-        $qp->bindValue(':nom', $periode);
-        $qp->execute();
+        $ps = $this->_db->prepare($query);
+        $ps->bindValue(':nom', $periode);
+        $ps->execute();
     }
 
     /**
@@ -621,10 +621,10 @@ class Db
     {
         $query = 'INSERT INTO lexique_vue_mot_periode (mot, periode) VALUES (:mot, :periode)';
 
-        $qp = $this->_db->prepare($query);
-        $qp->bindValue(':mot', $motId);
-        $qp->bindValue(':periode', $periodeId);
-        $qp->execute();
+        $ps = $this->_db->prepare($query);
+        $ps->bindValue(':mot', $motId);
+        $ps->bindValue(':periode', $periodeId);
+        $ps->execute();
     }
 
     /**
@@ -637,13 +637,13 @@ class Db
     {
         $query = 'SELECT id FROM lexique_periodes WHERE nom = :nom;';
 
-        $qp = $this->_db->prepare($query);
-        $qp->bindValue(':nom', $nom);
-        $qp->execute();
+        $ps = $this->_db->prepare($query);
+        $ps->bindValue(':nom', $nom);
+        $ps->execute();
 
         $id = -1;
-        if ($qp->rowcount() != 0) {
-            while ($row = $qp->fetch()) {
+        if ($ps->rowcount() != 0) {
+            while ($row = $ps->fetch()) {
                 $id = $row->id;
             }
         }
@@ -681,10 +681,10 @@ class Db
     {
         $query = 'INSERT INTO lexique_siecles (numero) VALUES (:numero)';
 
-        $qp = $this->_db->prepare($query);
-        $qp->bindValue(':numero', $numero);
+        $ps = $this->_db->prepare($query);
+        $ps->bindValue(':numero', $numero);
 
-        $qp->execute();
+        $ps->execute();
     }
 
     /**
@@ -698,10 +698,10 @@ class Db
     {
         $query = 'INSERT INTO lexique_vue_mot_siecle (mot, siecle) VALUES (:mot, :siecle)';
 
-        $qp = $this->_db->prepare($query);
-        $qp->bindValue(':mot', $motId);
-        $qp->bindValue(':siecle', $siecle);
-        $qp->execute();
+        $ps = $this->_db->prepare($query);
+        $ps->bindValue(':mot', $motId);
+        $ps->bindValue(':siecle', $siecle);
+        $ps->execute();
     }
 
     /**
@@ -718,24 +718,24 @@ class Db
             $query = 'INSERT INTO lexique_references_biblio (auteur, titre, editeur, lieu_edition, date_edition, pages, lien, document) 
                         VALUES (:auteur, :titre, :editeur, :lieu_edition, :date_edition, :pages, :lien, :document)';
 
-            $qp = $this->_db->prepare($query);
-            $qp->bindValue(':auteur', $w->getAuteur());
-            $qp->bindValue(':titre', $w->getTitre());
-            $qp->bindValue(':editeur', $w->getEditeur());
-            $qp->bindValue(':lieu_edition', $w->getLieuEdition());
-            $qp->bindValue(':date_edition', $w->getDateEdition());
-            $qp->bindValue(':pages', $w->getPages());
-            $qp->bindValue(':lien', $w->getLien());
-            $qp->bindValue(':document', $w->getDocument());
-            $qp->execute();
+            $ps = $this->_db->prepare($query);
+            $ps->bindValue(':auteur', $w->getAuteur());
+            $ps->bindValue(':titre', $w->getTitre());
+            $ps->bindValue(':editeur', $w->getEditeur());
+            $ps->bindValue(':lieu_edition', $w->getLieuEdition());
+            $ps->bindValue(':date_edition', $w->getDateEdition());
+            $ps->bindValue(':pages', $w->getPages());
+            $ps->bindValue(':lien', $w->getLien());
+            $ps->bindValue(':document', $w->getDocument());
+            $ps->execute();
 
 
             $query = 'INSERT INTO lexique_vue_mot_reference (mot, reference) VALUES (:mot, :reference)';
 
-            $qp = $this->_db->prepare($query);
-            $qp->bindValue(':mot', $mot->getId());
-            $qp->bindValue(':reference', $this->select_latest_inserted_reference_id());
-            $qp->execute();
+            $ps = $this->_db->prepare($query);
+            $ps->bindValue(':mot', $mot->getId());
+            $ps->bindValue(':reference', $this->select_latest_inserted_reference_id());
+            $ps->execute();
         }
     }
 
@@ -748,12 +748,12 @@ class Db
     {
         $query = 'SELECT id FROM lexique_references_biblio ORDER BY 1 DESC LIMIT 1';
 
-        $qp = $this->_db->prepare($query);
-        $qp->execute();
+        $ps = $this->_db->prepare($query);
+        $ps->execute();
 
         $refId = -1;
-        if ($qp->rowcount() != 0) {
-            while ($row = $qp->fetch()) {
+        if ($ps->rowcount() != 0) {
+            while ($row = $ps->fetch()) {
                 $refId = $row->id;
             }
         }
@@ -816,25 +816,25 @@ class Db
     {
         $query = 'SELECT id, libelle, definition, illustration FROM lexique_mots WHERE id = :id';
 
-        $qp = $this->_db->prepare($query);
-        $qp->bindValue(":id", $id);
-        $qp->execute();
+        $ps = $this->_db->prepare($query);
+        $ps->bindValue(":id", $id);
+        $ps->execute();
 
-        return $this->complete_mot_after_select_on_lexique_mots($qp);
+        return $this->complete_mot_after_select_on_lexique_mots($ps);
     }
 
     /**
      * Complete a word after having executed 'SELECT id, libelle, definition, illustration FROM lexique_mots ...'.
      *
-     * @param $qp PDOStatement the prepared query after execution.
+     * @param $ps PDOStatement the prepared query after execution.
      *
      * @return Mot|null
      */
-    private function complete_mot_after_select_on_lexique_mots(PDOStatement $qp): ?Mot
+    private function complete_mot_after_select_on_lexique_mots(PDOStatement $ps): ?Mot
     {
         $mot = NULL;
-        if ($qp->rowcount() != 0) {
-            while ($row = $qp->fetch()) {
+        if ($ps->rowcount() != 0) {
+            while ($row = $ps->fetch()) {
                 $mot = new Mot($row->libelle, $row->definition);
                 $mot->setId($row->id);
                 $mot->setIllustration($row->illustration);
@@ -866,13 +866,13 @@ class Db
         $query = 'SELECT m.libelle FROM lexique_mots m, lexique_synonymes s 
                     WHERE s.mot_a = :id AND m.id = s.mot_b ORDER BY 1';
 
-        $qp = $this->_db->prepare($query);
-        $qp->bindValue(':id', $id);
-        $qp->execute();
+        $ps = $this->_db->prepare($query);
+        $ps->bindValue(':id', $id);
+        $ps->execute();
 
         $arr = array();
-        if ($qp->rowcount() != 0) {
-            while ($row = $qp->fetch()) {
+        if ($ps->rowcount() != 0) {
+            while ($row = $ps->fetch()) {
                 $arr[] = $row->libelle;
             }
         }
@@ -892,13 +892,13 @@ class Db
         $query = 'SELECT m.libelle FROM lexique_mots m, lexique_antonymes a 
                     WHERE a.mot_a = :id AND m.id = a.mot_b ORDER BY 1';
 
-        $qp = $this->_db->prepare($query);
-        $qp->bindValue(':id', $id);
-        $qp->execute();
+        $ps = $this->_db->prepare($query);
+        $ps->bindValue(':id', $id);
+        $ps->execute();
 
         $arr = array();
-        if ($qp->rowcount() != 0) {
-            while ($row = $qp->fetch()) {
+        if ($ps->rowcount() != 0) {
+            while ($row = $ps->fetch()) {
                 $arr[] = $row->libelle;
             }
         }
@@ -918,13 +918,13 @@ class Db
         $query = 'SELECT cl.intitule FROM lexique_champs_lexicaux cl, lexique_vue_mot_champ_lexical vcl 
                     WHERE vcl.mot = :id AND vcl.champ_lexical = cl.id ORDER BY 1';
 
-        $qp = $this->_db->prepare($query);
-        $qp->bindValue(':id', $id);
-        $qp->execute();
+        $ps = $this->_db->prepare($query);
+        $ps->bindValue(':id', $id);
+        $ps->execute();
 
         $arr = array();
-        if ($qp->rowcount() != 0) {
-            while ($row = $qp->fetch()) {
+        if ($ps->rowcount() != 0) {
+            while ($row = $ps->fetch()) {
                 $arr[] = $row->intitule;
             }
         }
@@ -944,13 +944,13 @@ class Db
         $query = 'SELECT p.nom FROM lexique_periodes p, lexique_vue_mot_periode vp 
                     WHERE vp.mot = :id AND vp.periode = p.id ORDER BY 1';
 
-        $qp = $this->_db->prepare($query);
-        $qp->bindValue(':id', $id);
-        $qp->execute();
+        $ps = $this->_db->prepare($query);
+        $ps->bindValue(':id', $id);
+        $ps->execute();
 
         $arr = array();
-        if ($qp->rowcount() != 0) {
-            while ($row = $qp->fetch()) {
+        if ($ps->rowcount() != 0) {
+            while ($row = $ps->fetch()) {
                 $arr[] = $row->nom;
             }
         }
@@ -970,13 +970,13 @@ class Db
         $query = 'SELECT s.numero FROM lexique_siecles s, lexique_vue_mot_siecle vs 
                     WHERE vs.mot = :id AND vs.siecle = s.numero ORDER BY 1';
 
-        $qp = $this->_db->prepare($query);
-        $qp->bindValue(':id', $id);
-        $qp->execute();
+        $ps = $this->_db->prepare($query);
+        $ps->bindValue(':id', $id);
+        $ps->execute();
 
         $siecle = array();
-        if ($qp->rowcount() != 0) {
-            while ($row = $qp->fetch()) {
+        if ($ps->rowcount() != 0) {
+            while ($row = $ps->fetch()) {
                 $siecle[] = $row->numero;
             }
         }
@@ -998,13 +998,13 @@ class Db
                     WHERE mr.mot = :motId AND r.id = mr.reference
                     ORDER BY r.titre';
 
-        $qp = $this->_db->prepare($query);
-        $qp->bindValue(':motId', $motId);
-        $qp->execute();
+        $ps = $this->_db->prepare($query);
+        $ps->bindValue(':motId', $motId);
+        $ps->execute();
 
         $references = array();
-        if ($qp->rowcount() != 0) {
-            while ($row = $qp->fetch()) {
+        if ($ps->rowcount() != 0) {
+            while ($row = $ps->fetch()) {
                 $references[] = $this->constructReferenceFromRow($row);
             }
         }
@@ -1045,13 +1045,13 @@ class Db
                     FROM lexique_variants_ortho vo, lexique_variants_ortho_types vt 
                     WHERE vo.mot = :id  AND vo.type = vt.id ORDER BY 1';
 
-        $qp = $this->_db->prepare($query);
-        $qp->bindValue(':id', $id);
-        $qp->execute();
+        $ps = $this->_db->prepare($query);
+        $ps->bindValue(':id', $id);
+        $ps->execute();
 
         $arr = array();
-        if ($qp->rowcount() != 0) {
-            while ($row = $qp->fetch()) {
+        if ($ps->rowcount() != 0) {
+            while ($row = $ps->fetch()) {
                 if (empty($arr[$row->type])) $arr[$row->type] = array();
                 $arr[$row->type][] = $row->variant;
             }
@@ -1129,12 +1129,12 @@ class Db
     {
         $query = 'DELETE FROM lexique_variants_ortho WHERE mot = :mot AND libelle = :variant AND type = :type';
 
-        $qp = $this->_db->prepare($query);
-        $qp->bindValue(':mot', is_numeric($mot) ? $mot : $this->select_mot_id_from_libelle($mot));
-        $qp->bindValue(':variant', is_numeric($variant) ? $variant : $this->select_variant_id_from_libelle($variant));
-        $qp->bindValue(':type', is_numeric($type) ? $type : $this->select_variant_type_id_from_libelle($type));
+        $ps = $this->_db->prepare($query);
+        $ps->bindValue(':mot', is_numeric($mot) ? $mot : $this->select_mot_id_from_libelle($mot));
+        $ps->bindValue(':variant', is_numeric($variant) ? $variant : $this->select_variant_id_from_libelle($variant));
+        $ps->bindValue(':type', is_numeric($type) ? $type : $this->select_variant_type_id_from_libelle($type));
 
-        $qp->execute();
+        $ps->execute();
     }
 
     /**
@@ -1171,9 +1171,9 @@ class Db
     {
         $query = 'INSERT INTO lexique_variants_ortho_types (libelle) VALUES (:libelle)';
 
-        $qp = $this->_db->prepare($query);
-        $qp->bindValue(':libelle', $libelle);
-        $qp->execute();
+        $ps = $this->_db->prepare($query);
+        $ps->bindValue(':libelle', $libelle);
+        $ps->execute();
     }
 
     /**
@@ -1188,11 +1188,11 @@ class Db
     {
         $query = 'INSERT INTO lexique_variants_ortho (libelle, type, mot) VALUES (:variant, :type, :mot)';
 
-        $qp = $this->_db->prepare($query);
-        $qp->bindValue(':mot', is_numeric($mot) ? $mot : $this->select_mot_id_from_libelle($mot));
-        $qp->bindValue(':variant', $variant);
-        $qp->bindValue(':type', is_numeric($type) ? $type : $this->select_variant_type_id_from_libelle($type));
-        $qp->execute();
+        $ps = $this->_db->prepare($query);
+        $ps->bindValue(':mot', is_numeric($mot) ? $mot : $this->select_mot_id_from_libelle($mot));
+        $ps->bindValue(':variant', $variant);
+        $ps->bindValue(':type', is_numeric($type) ? $type : $this->select_variant_type_id_from_libelle($type));
+        $ps->execute();
     }
 
     /**
@@ -1234,11 +1234,11 @@ class Db
     {
         $query = 'DELETE FROM lexique_antonymes WHERE mot_a = :lib AND mot_b = :ant OR mot_b = :lib AND mot_a = :ant';
 
-        $qp = $this->_db->prepare($query);
-        $qp->bindValue(':lib', $motId);
-        $qp->bindValue(':ant', $antonymeId);
+        $ps = $this->_db->prepare($query);
+        $ps->bindValue(':lib', $motId);
+        $ps->bindValue(':ant', $antonymeId);
 
-        $qp->execute();
+        $ps->execute();
     }
 
     /**
@@ -1280,11 +1280,11 @@ class Db
     {
         $query = 'DELETE FROM lexique_synonymes WHERE mot_a = :lib AND mot_b = :ant OR mot_b = :lib AND mot_a = :ant';
 
-        $qp = $this->_db->prepare($query);
-        $qp->bindValue(':lib', $motId);
-        $qp->bindValue(':ant', $synonymeId);
+        $ps = $this->_db->prepare($query);
+        $ps->bindValue(':lib', $motId);
+        $ps->bindValue(':ant', $synonymeId);
 
-        $qp->execute();
+        $ps->execute();
     }
 
     /**
@@ -1326,11 +1326,11 @@ class Db
     {
         $query = 'DELETE FROM lexique_vue_mot_champ_lexical WHERE mot = :mot AND champ_lexical = :champLexical';
 
-        $qp = $this->_db->prepare($query);
-        $qp->bindValue(':mot', $motId);
-        $qp->bindValue(':champLexical', $champLexicalId);
+        $ps = $this->_db->prepare($query);
+        $ps->bindValue(':mot', $motId);
+        $ps->bindValue(':champLexical', $champLexicalId);
 
-        $qp->execute();
+        $ps->execute();
     }
 
     /**
@@ -1372,11 +1372,11 @@ class Db
     {
         $query = 'DELETE FROM lexique_vue_mot_periode WHERE mot = :mot AND periode = :periode';
 
-        $qp = $this->_db->prepare($query);
-        $qp->bindValue(':mot', $motId);
-        $qp->bindValue(':periode', $periodeId);
+        $ps = $this->_db->prepare($query);
+        $ps->bindValue(':mot', $motId);
+        $ps->bindValue(':periode', $periodeId);
 
-        $qp->execute();
+        $ps->execute();
     }
 
     /**
@@ -1418,11 +1418,11 @@ class Db
     {
         $query = 'DELETE FROM lexique_vue_mot_siecle WHERE mot = :mot AND siecle = :siecle';
 
-        $qp = $this->_db->prepare($query);
-        $qp->bindValue(':mot', $motId);
-        $qp->bindValue(':siecle', $siecleId);
+        $ps = $this->_db->prepare($query);
+        $ps->bindValue(':mot', $motId);
+        $ps->bindValue(':siecle', $siecleId);
 
-        $qp->execute();
+        $ps->execute();
     }
 
     /**
@@ -1437,11 +1437,11 @@ class Db
                     WHERE definition IS NOT NULL AND STRCMP(definition, :invalid) 
                     ORDER BY RAND() LIMIT ' . $n;
 
-        $qp = $this->_db->prepare($query);
-        $qp->bindValue(':invalid', self::$invalidString);
-        $qp->execute();
+        $ps = $this->_db->prepare($query);
+        $ps->bindValue(':invalid', self::$invalidString);
+        $ps->execute();
 
-        return $this->complete_mot_after_select_on_lexique_mots($qp);
+        return $this->complete_mot_after_select_on_lexique_mots($ps);
     }
 
     /**
@@ -1453,24 +1453,24 @@ class Db
     {
         $query = 'SELECT id, libelle, definition, illustration FROM lexique_mots ORDER BY 2';
 
-        $qp = $this->_db->prepare($query);
-        $qp->execute();
+        $ps = $this->_db->prepare($query);
+        $ps->execute();
 
-        return $this->complete_mots_after_select_on_lexique_mots($qp);
+        return $this->complete_mots_after_select_on_lexique_mots($ps);
     }
 
     /**
      * Complete multiple Mots after having executed 'SELECT id, libelle, definition, illustration FROM lexique_mots ...'.
      *
-     * @param $qp PDOStatement the prepared query after execution.
+     * @param $ps PDOStatement the prepared query after execution.
      *
      * @return array
      */
-    private function complete_mots_after_select_on_lexique_mots(PDOStatement $qp): array
+    private function complete_mots_after_select_on_lexique_mots(PDOStatement $ps): array
     {
         $tab = array();
-        if ($qp->rowcount() != 0) {
-            while ($row = $qp->fetch()) {
+        if ($ps->rowcount() != 0) {
+            while ($row = $ps->fetch()) {
                 $mot = new Mot($row->libelle, $row->definition);
                 $mot->setId($row->id);
                 $mot->setIllustration($row->illustration);
@@ -1497,11 +1497,11 @@ class Db
     {
         $query = 'SELECT id, libelle, definition, illustration FROM lexique_mots WHERE libelle = :libelle';
 
-        $qp = $this->_db->prepare($query);
-        $qp->bindValue("libelle", $libelle);
-        $qp->execute();
+        $ps = $this->_db->prepare($query);
+        $ps->bindValue("libelle", $libelle);
+        $ps->execute();
 
-        return $this->complete_mot_after_select_on_lexique_mots($qp);
+        return $this->complete_mot_after_select_on_lexique_mots($ps);
     }
 
     /**
@@ -1572,9 +1572,9 @@ class Db
     {
         $query = 'UPDATE lexique_references_biblio SET document = NULL WHERE id = :documentId';
 
-        $qp = $this->_db->prepare($query);
-        $qp->bindValue(':documentId', $documentId);
-        return $qp->execute();
+        $ps = $this->_db->prepare($query);
+        $ps->bindValue(':documentId', $documentId);
+        return $ps->execute();
     }
 
     /**
@@ -1587,9 +1587,9 @@ class Db
     {
         $query = 'UPDATE lexique_mots SET illustration = NULL WHERE id = :motId';
 
-        $qp = $this->_db->prepare($query);
-        $qp->bindValue(':motId', $motId);
-        return $qp->execute();
+        $ps = $this->_db->prepare($query);
+        $ps->bindValue(':motId', $motId);
+        return $ps->execute();
     }
 
     /**
@@ -1604,15 +1604,15 @@ class Db
         try {
             $query = 'DELETE FROM lexique_vue_mot_reference WHERE reference = :refId';
 
-            $qp = $this->_db->prepare($query);
-            $qp->bindValue(':refId', $refId);
-            $qp->execute();
+            $ps = $this->_db->prepare($query);
+            $ps->bindValue(':refId', $refId);
+            $ps->execute();
 
             $query = 'DELETE FROM lexique_references_biblio WHERE id = :refId';
 
-            $qp = $this->_db->prepare($query);
-            $qp->bindValue(':refId', $refId);
-            $qp->execute();
+            $ps = $this->_db->prepare($query);
+            $ps->bindValue(':refId', $refId);
+            $ps->execute();
         } catch (Exception $e) {
             $this->_db->rollBack();
             return false;
@@ -1737,11 +1737,11 @@ class Db
     {
         $query = 'UPDATE lexique_champs_lexicaux SET intitule = :intitule, description = :description WHERE id = :lexId';
 
-        $qp = $this->_db->prepare($query);
-        $qp->bindValue(':lexId', $updatedLex->getId());
-        $qp->bindValue(':intitule', $updatedLex->getIntitule());
-        $qp->bindValue(':description', $updatedLex->getDescription());
-        return $qp->execute();
+        $ps = $this->_db->prepare($query);
+        $ps->bindValue(':lexId', $updatedLex->getId());
+        $ps->bindValue(':intitule', $updatedLex->getIntitule());
+        $ps->bindValue(':description', $updatedLex->getDescription());
+        return $ps->execute();
     }
 
     /**
@@ -1868,13 +1868,13 @@ class Db
         $query = 'UPDATE lexique_periodes SET nom = :nom, description = :description, debut = :debut, fin = :fin 
                     WHERE id = :perId';
 
-        $qp = $this->_db->prepare($query);
-        $qp->bindValue(':perId', $updatedPer->getId());
-        $qp->bindValue(':nom', $updatedPer->getNom());
-        $qp->bindValue(':description', $updatedPer->getDescription());
-        $qp->bindValue(':debut', $updatedPer->getDebut());
-        $qp->bindValue(':fin', $updatedPer->getFin());
-        return $qp->execute();
+        $ps = $this->_db->prepare($query);
+        $ps->bindValue(':perId', $updatedPer->getId());
+        $ps->bindValue(':nom', $updatedPer->getNom());
+        $ps->bindValue(':description', $updatedPer->getDescription());
+        $ps->bindValue(':debut', $updatedPer->getDebut());
+        $ps->bindValue(':fin', $updatedPer->getFin());
+        return $ps->execute();
     }
 
     /**

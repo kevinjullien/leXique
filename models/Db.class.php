@@ -7,6 +7,8 @@ class Db
     private static $instance = null;
     private $_db;
 
+    private static $invalidString = '<p>&nbsp;</p>';
+
 
     private function __construct()
     {
@@ -26,7 +28,8 @@ class Db
             else
                 $ini = parse_ini_file(CONFIG_PATH . 'config.ini');
 
-            $this->_db = new PDO('mysql:host=' . $ini['db_host'] . ';dbname=' . $ini['db_name'] . ';charset=utf8mb4', $ini['db_login'], $ini['db_password']);
+            $this->_db = new PDO('mysql:host=' . $ini['db_host'] . ';dbname=' . $ini['db_name'] . ';charset=utf8mb4',
+                                    $ini['db_login'], $ini['db_password']);
             $this->_db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $this->_db->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_OBJ);
         } catch (Exception | Error $e) {
@@ -103,7 +106,8 @@ class Db
      */
     public function insert_utilisateur($username, $password, $isAdmin): bool
     {
-        $query = 'INSERT INTO lexique_utilisateurs (pseudo, mot_de_passe, est_admin) VALUES (:username, :password, :isAdmin)';
+        $query = 'INSERT INTO lexique_utilisateurs (pseudo, mot_de_passe, est_admin) 
+                    VALUES (:username, :password, :isAdmin)';
         $qp = $this->_db->prepare($query);
         $qp->bindValue(':username', $username);
         $qp->bindValue(':password', $password);
@@ -145,9 +149,11 @@ class Db
      */
     public function select_mots_with_libelle_and_definition_with_valid_definition(): array
     {
-        $query = "SELECT libelle, definition FROM lexique_mots WHERE definition IS NOT NULL AND STRCMP(definition, '<p>&nbsp;</p>') ORDER BY 1";
+        $query = 'SELECT libelle, definition FROM lexique_mots 
+                    WHERE definition IS NOT NULL AND STRCMP(definition, :invalid) ORDER BY 1';
 
         $qp = $this->_db->prepare($query);
+        $qp->bindValue(':invalid', self::$invalidString);
         $qp->execute();
 
         $mots = array();
@@ -323,7 +329,8 @@ class Db
      */
     private function insert_mot($libelle, $definition = NULL, $illustration = NULL): void
     {
-        $query = 'INSERT INTO lexique_mots (libelle, definition, illustration) VALUES (:libelle, :definition, :illustration)';
+        $query = 'INSERT INTO lexique_mots (libelle, definition, illustration) 
+                    VALUES (:libelle, :definition, :illustration)';
 
         $qp = $this->_db->prepare($query);
         $qp->bindValue(':libelle', $libelle);
@@ -708,7 +715,8 @@ class Db
         foreach ($mot->getReferences() as $i => $w) {
             if (empty($w)) continue;
 
-            $query = 'INSERT INTO lexique_references_biblio (auteur, titre, editeur, lieu_edition, date_edition, pages, lien, document) VALUES (:auteur, :titre, :editeur, :lieu_edition, :date_edition, :pages, :lien, :document)';
+            $query = 'INSERT INTO lexique_references_biblio (auteur, titre, editeur, lieu_edition, date_edition, pages, lien, document) 
+                        VALUES (:auteur, :titre, :editeur, :lieu_edition, :date_edition, :pages, :lien, :document)';
 
             $qp = $this->_db->prepare($query);
             $qp->bindValue(':auteur', $w->getAuteur());
@@ -855,7 +863,8 @@ class Db
      */
     public function select_synonymes_libelles(int $id): array
     {
-        $query = 'SELECT m.libelle FROM lexique_mots m, lexique_synonymes s WHERE s.mot_a = :id AND m.id = s.mot_b ORDER BY 1';
+        $query = 'SELECT m.libelle FROM lexique_mots m, lexique_synonymes s 
+                    WHERE s.mot_a = :id AND m.id = s.mot_b ORDER BY 1';
 
         $qp = $this->_db->prepare($query);
         $qp->bindValue(':id', $id);
@@ -880,7 +889,8 @@ class Db
      */
     public function select_antonymes_libelles($id): array
     {
-        $query = 'SELECT m.libelle FROM lexique_mots m, lexique_antonymes a WHERE a.mot_a = :id AND m.id = a.mot_b ORDER BY 1';
+        $query = 'SELECT m.libelle FROM lexique_mots m, lexique_antonymes a 
+                    WHERE a.mot_a = :id AND m.id = a.mot_b ORDER BY 1';
 
         $qp = $this->_db->prepare($query);
         $qp->bindValue(':id', $id);
@@ -905,7 +915,8 @@ class Db
      */
     public function select_mot_champs_lexicaux_intitules($id): array
     {
-        $query = 'SELECT cl.intitule FROM lexique_champs_lexicaux cl, lexique_vue_mot_champ_lexical vcl WHERE vcl.mot = :id AND vcl.champ_lexical = cl.id ORDER BY 1';
+        $query = 'SELECT cl.intitule FROM lexique_champs_lexicaux cl, lexique_vue_mot_champ_lexical vcl 
+                    WHERE vcl.mot = :id AND vcl.champ_lexical = cl.id ORDER BY 1';
 
         $qp = $this->_db->prepare($query);
         $qp->bindValue(':id', $id);
@@ -930,7 +941,8 @@ class Db
      */
     public function select_mot_periodes_noms($id): array
     {
-        $query = 'SELECT p.nom FROM lexique_periodes p, lexique_vue_mot_periode vp WHERE vp.mot = :id AND vp.periode = p.id ORDER BY 1';
+        $query = 'SELECT p.nom FROM lexique_periodes p, lexique_vue_mot_periode vp 
+                    WHERE vp.mot = :id AND vp.periode = p.id ORDER BY 1';
 
         $qp = $this->_db->prepare($query);
         $qp->bindValue(':id', $id);
@@ -955,7 +967,8 @@ class Db
      */
     public function select_mot_siecles($id): array
     {
-        $query = 'SELECT s.numero FROM lexique_siecles s, lexique_vue_mot_siecle vs WHERE vs.mot = :id AND vs.siecle = s.numero ORDER BY 1';
+        $query = 'SELECT s.numero FROM lexique_siecles s, lexique_vue_mot_siecle vs 
+                    WHERE vs.mot = :id AND vs.siecle = s.numero ORDER BY 1';
 
         $qp = $this->_db->prepare($query);
         $qp->bindValue(':id', $id);
@@ -1028,7 +1041,8 @@ class Db
      */
     private function select_variants_orthographiques_from_mot_id(int $id): array
     {
-        $query = 'SELECT vt.libelle AS type, vo.libelle AS variant FROM lexique_variants_ortho vo, lexique_variants_ortho_types vt 
+        $query = 'SELECT vt.libelle AS type, vo.libelle AS variant 
+                    FROM lexique_variants_ortho vo, lexique_variants_ortho_types vt 
                     WHERE vo.mot = :id  AND vo.type = vt.id ORDER BY 1';
 
         $qp = $this->_db->prepare($query);
@@ -1055,7 +1069,9 @@ class Db
      */
     private function update_mot(Mot $actualMot, Mot $updatedMot): void
     {
-        if (strcmp($actualMot->getLibelle(), $updatedMot->getLibelle()) == 0 && strcmp($actualMot->getDefinition(), $updatedMot->getDefinition()) == 0 && empty($updatedMot->getIllustration())) {
+        if (strcmp($actualMot->getLibelle(), $updatedMot->getLibelle()) == 0
+            && strcmp($actualMot->getDefinition(), $updatedMot->getDefinition()) == 0
+            && empty($updatedMot->getIllustration())) {
             return;
         }
 
@@ -1079,7 +1095,9 @@ class Db
     {
         foreach ($actualMot->getVariantsOrthographiques() as $type => $values) {
             foreach ($values as $i => $variant) {
-                if (empty($updatedMot->getVariantsOrthographiques()) || empty($updatedMot->getVariantsOrthographiques()[$type]) || !in_array($variant, $updatedMot->getVariantsOrthographiques()[$type])) {
+                if (empty($updatedMot->getVariantsOrthographiques())
+                    || empty($updatedMot->getVariantsOrthographiques()[$type])
+                    || !in_array($variant, $updatedMot->getVariantsOrthographiques()[$type])) {
                     $this->remove_variant($actualMot->getId(), $variant, $type);
                 }
             }
@@ -1090,7 +1108,9 @@ class Db
                 $this->insert_variant_type($type);
             }
             foreach ($values as $i => $variant) {
-                if (empty($actualMot->getVariantsOrthographiques()) || empty($actualMot->getVariantsOrthographiques()[$type]) || !in_array($variant, $actualMot->getVariantsOrthographiques()[$type])) {
+                if (empty($actualMot->getVariantsOrthographiques())
+                    || empty($actualMot->getVariantsOrthographiques()[$type])
+                    || !in_array($variant, $actualMot->getVariantsOrthographiques()[$type])) {
                     $this->insert_variant($actualMot->getId(), $variant, $type);
                 }
             }
@@ -1413,9 +1433,12 @@ class Db
      */
     public function select_n_random_valid_mot_with_id_libelle_definition_and_illustration(int $n = 1): ?Mot
     {
-        $query = "SELECT id, libelle, definition, illustration FROM lexique_mots WHERE definition IS NOT NULL AND STRCMP(definition, '<p>&nbsp;</p>') ORDER BY RAND() LIMIT " . $n;
+        $query = 'SELECT id, libelle, definition, illustration FROM lexique_mots 
+                    WHERE definition IS NOT NULL AND STRCMP(definition, :invalid) 
+                    ORDER BY RAND() LIMIT ' . $n;
 
         $qp = $this->_db->prepare($query);
+        $qp->bindValue(':invalid', self::$invalidString);
         $qp->execute();
 
         return $this->complete_mot_after_select_on_lexique_mots($qp);
@@ -1522,7 +1545,8 @@ class Db
      */
     public function select_reference_by_id(int $id): Reference
     {
-        $query = 'SELECT id, auteur, titre, editeur, lieu_edition, date_edition, pages, lien, document FROM lexique_references_biblio WHERE id = :id';
+        $query = 'SELECT id, auteur, titre, editeur, lieu_edition, date_edition, pages, lien, document 
+                    FROM lexique_references_biblio WHERE id = :id';
 
         $ps = $this->_db->prepare($query);
         $ps->bindValue(':id', $id);
@@ -1630,7 +1654,8 @@ class Db
      */
     private function select_mots_linked_with_champ_lexical(int $lexId): array
     {
-        $query = 'SELECT m.id FROM lexique_mots m, lexique_vue_mot_champ_lexical cl WHERE cl.champ_lexical = :lexId AND cl.mot = m.id';
+        $query = 'SELECT m.id FROM lexique_mots m, lexique_vue_mot_champ_lexical cl 
+                    WHERE cl.champ_lexical = :lexId AND cl.mot = m.id';
 
         $ps = $this->_db->prepare($query);
         $ps->bindValue(':lexId', $lexId);
@@ -1648,16 +1673,18 @@ class Db
     }
 
     /**
-     * Select every Champ Lexical with id, intitule and description.
+     * Select every valid Champ Lexical with id, intitule and description.
+     * NULL and '<p>&nbsp;</p>' are considered invalid in the description.
      *
      * @return array
      */
     public function select_valid_champs_lexicaux_with_id_intitule_and_description(): array
     {
-        $query = "SELECT id, intitule, description FROM lexique_champs_lexicaux WHERE description IS NOT NULL AND STRCMP(description, '<p>&nbsp;</p>')
-                    ORDER BY 2";
+        $query = 'SELECT id, intitule, description FROM lexique_champs_lexicaux 
+                    WHERE description IS NOT NULL AND STRCMP(description, :invalid) ORDER BY 2';
 
         $ps = $this->_db->prepare($query);
+        $ps->bindValue(':invalid', self::$invalidString);
         $ps->execute();
 
         $tab = array();
@@ -1771,16 +1798,19 @@ class Db
     }
 
     /**
-     * Select every existing Periode with their id, nom, debut, fin and description.
+     * Select every valid existing Periode with their id, nom, debut, fin and description.
+     * NULL and '<p>&nbsp;</p>' are considered invalid in the description.
      *
      * @return array
      */
     public function select_periodes_with_id_nom_debut_fin_and_description(): array
     {
-        $query = "SELECT id, nom, debut, fin, description FROM lexique_periodes WHERE (description IS NOT NULL AND STRCMP(description, '<p>&nbsp;</p>'))
-                    OR debut IS NOT NULL OR fin IS NOT NULL ORDER BY 2";
+        $query = 'SELECT id, nom, debut, fin, description FROM lexique_periodes
+                    WHERE (description IS NOT NULL AND STRCMP(description, :invalid))
+                    OR debut IS NOT NULL OR fin IS NOT NULL ORDER BY 2';
 
         $ps = $this->_db->prepare($query);
+        $ps->bindValue(':invalid', self::$invalidString);
         $ps->execute();
 
         $tab = array();
@@ -1835,7 +1865,8 @@ class Db
      */
     public function update_periode(Periode $updatedPer): bool
     {
-        $query = 'UPDATE lexique_periodes SET nom = :nom, description = :description, debut = :debut, fin = :fin WHERE id = :perId';
+        $query = 'UPDATE lexique_periodes SET nom = :nom, description = :description, debut = :debut, fin = :fin 
+                    WHERE id = :perId';
 
         $qp = $this->_db->prepare($query);
         $qp->bindValue(':perId', $updatedPer->getId());
@@ -1854,9 +1885,11 @@ class Db
      */
     public function select_valid_champs_lexicaux_with_intitule_and_description(): array
     {
-        $query = "SELECT intitule, description FROM lexique_champs_lexicaux WHERE description IS NOT NULL AND STRCMP(description, '<p>&nbsp;</p>')";
+        $query = 'SELECT intitule, description FROM lexique_champs_lexicaux 
+                    WHERE description IS NOT NULL AND STRCMP(description, :invalid)';
 
         $ps = $this->_db->prepare($query);
+        $ps->bindValue(':invalid', self::$invalidString);
         $ps->execute();
 
         $tab = array();
@@ -1877,11 +1910,13 @@ class Db
      */
     public function select_valid_periodes_with_nom_debut_fin_and_description(): array
     {
-        $query = "SELECT nom, debut, fin, description FROM lexique_periodes 
-                    WHERE (description IS NOT NULL AND STRCMP(description, '<p>&nbsp;</p>'))
-                    OR (debut IS NOT NULL AND STRCMP(debut, '<p>&nbsp;</p>') AND fin IS NOT NULL AND STRCMP(fin, '<p>&nbsp;</p>'))";
+        $query = 'SELECT nom, debut, fin, description FROM lexique_periodes 
+                    WHERE (description IS NOT NULL AND STRCMP(description, :invalid))
+                    OR (debut IS NOT NULL AND STRCMP(debut, :invalid) 
+                    AND fin IS NOT NULL AND STRCMP(fin, :invalid))';
 
         $ps = $this->_db->prepare($query);
+        $ps->bindValue(':invalid', self::$invalidString);
         $ps->execute();
 
         $tab = array();
@@ -1905,7 +1940,8 @@ class Db
      */
     public function select_every_variants_with_libelle_and_type(): array
     {
-        $query = 'SELECT v.libelle AS variant, m.libelle AS mot, t.libelle AS type FROM lexique_variants_ortho v, lexique_variants_ortho_types t, lexique_mots m
+        $query = 'SELECT v.libelle AS variant, m.libelle AS mot, t.libelle AS type 
+                    FROM lexique_variants_ortho v, lexique_variants_ortho_types t, lexique_mots m
                     WHERE v.mot = m.id AND v.type = t.id ORDER BY 1';
 
         $ps = $this->_db->prepare($query);

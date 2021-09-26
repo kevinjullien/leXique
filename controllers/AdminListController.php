@@ -19,49 +19,31 @@ class AdminListController
 
         if (isset($_GET['scope'])) {
             if ($_GET['scope'] === "words") {
-                //TODO améliorer pour adapter la requête à la DB selon la demande, et donc alléger la quantité de données transférées
-                $mots = $this->_db->select_complete_mots();
-
-                if (isset($_GET['filter']) && !empty($_GET['filter']) && $_GET['filter'] !== "all") {
-                    $newList = array();
-                    switch ($_GET['filter']) {
-                        case "def":
-                            foreach ($mots as $i => $mot) {
-                                if (empty($mot->getDefinition()) || !strcmp($mot->getDefinition(), "<p>&nbsp;</p>")) $newList[] = $mot;
-                            }
-                            break;
-                        case "syn":
-                            foreach ($mots as $mot) {
-                                if (count($mot->getSynonymes()) == 0) $newList[] = $mot;
-                            }
-                            break;
-                        case "ant":
-                            foreach ($mots as $mot) {
-                                if (count($mot->getAntonymes()) == 0) $newList[] = $mot;
-                            }
-                            break;
-                        case "lex":
-                            foreach ($mots as $mot) {
-                                if (count($mot->getChampsLexicaux()) == 0) $newList[] = $mot;
-                            }
-                            break;
-                        case "cen":
-                            foreach ($mots as $mot) {
-                                if (count($mot->getSiecles()) == 0) $newList[] = $mot;
-                            }
-                            break;
-                        case "per":
-                            foreach ($mots as $mot) {
-                                if (count($mot->getPeriodes()) == 0) $newList[] = $mot;
-                            }
-                            break;
-                        case "ref":
-                            foreach ($mots as $mot) {
-                                if (count($mot->getReferences()) == 0) $newList[] = $mot;
-                            }
-                            break;
-                    }
-                    $mots = $newList;
+                switch ($_GET['filter']??"all") {
+                    case "def":
+                        $mots = $this->_db->select_complete_mots_with_invalid_definition();
+                        break;
+                    case "syn":
+                        $mots = $this->_db->select_complete_mots_with_no_synonyme();
+                        break;
+                    case "ant":
+                        $mots = $this->_db->select_complete_mots_with_no_antonyme();
+                        break;
+                    case "lex":
+                        $mots = $this->_db->select_complete_mots_with_no_champ_lexical();
+                        break;
+                    case "cen":
+                        $mots = $this->_db->select_complete_mots_with_no_siecle();
+                        break;
+                    case "per":
+                        $mots = $this->_db->select_complete_mots_with_no_periode();
+                        break;
+                    case "ref":
+                        $mots = $this->_db->select_complete_mots_with_no_reference();
+                        break;
+                    case "all":
+                        $mots = $this->_db->select_complete_mots();
+                        break;
                 }
                 require_once(VIEW_PATH . 'adminListMot.php');
             } else if ($_GET['scope'] === "lex") {

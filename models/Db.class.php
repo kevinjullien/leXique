@@ -1459,6 +1459,24 @@ class Db
     }
 
     /**
+     * Fetch the list of Mot with an invalid definition with every attribute filled if the data exists.
+     *
+     * @return array of Mots
+     */
+    public function select_complete_mots_with_invalid_definition(): array
+    {
+        $query = 'SELECT id, libelle, definition, illustration FROM lexique_mots 
+                    WHERE definition IS NULL OR !STRCMP(definition, :invalid) 
+                    ORDER BY 2';
+
+        $ps = $this->_db->prepare($query);
+        $ps->bindValue(':invalid', self::$invalidString);
+        $ps->execute();
+
+        return $this->complete_mots_after_select_on_lexique_mots($ps);
+    }
+
+    /**
      * Complete multiple Mots after having executed 'SELECT id, libelle, definition, illustration FROM lexique_mots ...'.
      *
      * @param $ps PDOStatement the prepared query after execution.
@@ -1975,5 +1993,113 @@ class Db
         $ps->execute();
 
         return $ps->rowcount() != 0;
+    }
+
+    /**
+     * Fetch the list of Mot with no Synonyme with every attribute filled if the data exists.
+     *
+     * @return array of Mots
+     */
+    public function select_complete_mots_with_no_synonyme(): array
+    {
+        $query = 'SELECT m.id, m.libelle, m.definition, m.illustration
+                    FROM lexique_mots m
+                    WHERE m.id NOT IN (SELECT DISTINCT mot_a FROM lexique_synonymes where mot_a = m.id OR mot_b = m.id)
+                    ORDER BY 2';
+
+        $ps = $this->_db->prepare($query);
+        $ps->execute();
+
+        return $this->complete_mots_after_select_on_lexique_mots($ps);
+    }
+
+    /**
+     * Fetch the list of Mot with no Antonyme with every attribute filled if the data exists.
+     *
+     * @return array of Mots
+     */
+    public function select_complete_mots_with_no_antonyme(): array
+    {
+        $query = 'SELECT m.id, m.libelle, m.definition, m.illustration
+                    FROM lexique_mots m
+                    WHERE m.id NOT IN (SELECT DISTINCT mot_a FROM lexique_antonymes where mot_a = m.id OR mot_b = m.id)
+                    ORDER BY 2';
+
+        $ps = $this->_db->prepare($query);
+        $ps->execute();
+
+        return $this->complete_mots_after_select_on_lexique_mots($ps);
+    }
+
+    /**
+     * Fetch the list of Mot with no Champ Lexical with every attribute filled if the data exists.
+     *
+     * @return array of Mots
+     */
+    public function select_complete_mots_with_no_champ_lexical(): array
+    {
+        $query = 'SELECT m.id, m.libelle, m.definition, m.illustration
+                    FROM lexique_mots m
+                    WHERE m.id NOT IN (SELECT DISTINCT mot FROM lexique_vue_mot_champ_lexical where mot = m.id)
+                    ORDER BY 2';
+
+        $ps = $this->_db->prepare($query);
+        $ps->execute();
+
+        return $this->complete_mots_after_select_on_lexique_mots($ps);
+    }
+
+    /**
+     * Fetch the list of Mot with no Siecle with every attribute filled if the data exists.
+     *
+     * @return array of Mots
+     */
+    public function select_complete_mots_with_no_siecle(): array
+    {
+        $query = 'SELECT m.id, m.libelle, m.definition, m.illustration
+                    FROM lexique_mots m
+                    WHERE m.id NOT IN (SELECT DISTINCT mot FROM lexique_vue_mot_siecle where mot = m.id)
+                    ORDER BY 2';
+
+        $ps = $this->_db->prepare($query);
+        $ps->execute();
+
+        return $this->complete_mots_after_select_on_lexique_mots($ps);
+    }
+
+    /**
+     * Fetch the list of Mot with no Periode with every attribute filled if the data exists.
+     *
+     * @return array of Mots
+     */
+    public function select_complete_mots_with_no_periode(): array
+    {
+        $query = 'SELECT m.id, m.libelle, m.definition, m.illustration
+                    FROM lexique_mots m
+                    WHERE m.id NOT IN (SELECT DISTINCT mot FROM lexique_vue_mot_periode where mot = m.id)
+                    ORDER BY 2';
+
+        $ps = $this->_db->prepare($query);
+        $ps->execute();
+
+        return $this->complete_mots_after_select_on_lexique_mots($ps);
+    }
+
+    /**
+     * Fetch the list of Mot with no Reference with every attribute filled if the data exists.
+     *
+     * @return array of Mots
+     */
+    public function select_complete_mots_with_no_reference(): array
+    {
+        $query = 'SELECT m.id, m.libelle, m.definition, m.illustration
+                    FROM lexique_mots m
+                    WHERE m.id NOT IN (SELECT DISTINCT mot FROM lexique_vue_mot_reference where mot = m.id)
+                    ORDER BY 2';
+
+        $ps = $this->_db->prepare($query);
+        $ps->execute();
+
+        return $this->complete_mots_after_select_on_lexique_mots($ps);
     }
 }

@@ -1,4 +1,7 @@
 <section id="contenu">
+
+    <a class="btn btn-default btn-sm" id="topBtn" title="Revenir en début de page"><i class='fas fa-arrow-up'></i></a>
+
     <section class="container-fluid">
         <form action="/index.php?action=adminList&scope=words" method="get">
             <input name="action" value="adminList" hidden>
@@ -74,7 +77,7 @@
                     $actualLetter = strtoupper($mot->getLibelle()[0]);
                     if ($actualLetter !== $previousLetter){
                         $previousLetter = $actualLetter;
-                        echo '<tr class="letterDivision" data-aos="flip-left"><th scope="row" colspan="9">' . $actualLetter . '</th></tr>';
+                        echo '<tr class="letterDivision" id="' . $actualLetter . '" data-aos="flip-left"><th scope="row" colspan="9">' . $actualLetter . '</th></tr>';
                     }?>
                     <tr class="trays" <?php echo $i%2 == 0 ? 'data-aos="fade-up-right"' : 'data-aos="fade-up-left"' ?> data-data="<?php echo $mot->getLibelle() ?>">
                         <th scope="row"><?php echo $mot->getLibelle(); ?></th>
@@ -135,7 +138,9 @@
             ?>
             </tbody>
         </table>
-        <script src="<?php echo SCRIPTS_PATH ?>searchBar.js"></script>
-        <script src="<?php echo SCRIPTS_PATH ?>listSelection.js"></script>
     </section>
 </section>
+<script src="<?php echo SCRIPTS_PATH ?>searchBar.js"></script>
+<script src="<?php echo SCRIPTS_PATH ?>listSelection.js"></script>
+<script src="<?php echo SCRIPTS_PATH ?>goToTopButton.js"></script>
+<script src='https://kit.fontawesome.com/a076d05399.js' crossorigin='anonymous'></script>

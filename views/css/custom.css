@@ -100,7 +100,7 @@ h2 {
     display: none;
     position: fixed;
     bottom: 50px;
-    right: 30px;
+    right: 2%;
     z-index: 99;
     font-size: 18px;
     border: none;
@@ -114,6 +114,14 @@ h2 {
 
 #topBtn:hover {
     background-color: #555;
+}
+
+#alphabetLinks {
+    position: fixed;
+    top: 50%;
+    left: 2%;
+    transform: translate(-50%, -50%);
+    font-family: Georgia, serif;
 }
 
 html { scroll-behavior: smooth; }

@@ -1,6 +1,7 @@
 <section id="contenu">
 
     <a class="btn btn-default btn-sm" id="topBtn" title="Revenir en début de page"><i class='fas fa-arrow-up'></i></a>
+    <section id="alphabetLinks" class="text-center"></section></i></a>
 
     <section class="container-fluid">
         <input class="form-control" id="searchBar" type="text" placeholder="Rechercher">
@@ -52,4 +53,5 @@
 <script src="<?php echo SCRIPTS_PATH ?>searchBar.js"></script>
 <script src="<?php echo SCRIPTS_PATH ?>listSelection.js"></script>
 <script src="<?php echo SCRIPTS_PATH ?>goToTopButton.js"></script>
+<script src="<?php echo SCRIPTS_PATH ?>alphabetMenu.js"></script>
 <script src='https://kit.fontawesome.com/a076d05399.js' crossorigin='anonymous'></script>

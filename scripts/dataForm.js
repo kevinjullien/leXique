@@ -527,7 +527,6 @@ latestVariantType.addEventListener("change", onWordInput);
 addEventListenerOnAllFieldsOfTheLatestReference();
 
 document.getElementById('libelleInput').addEventListener("change", (e) => {
-    //TODO A bit simple, improvement necessary
     if (words.includes(e.target.value)) {
         alert("Le mot existe déjà dans la base de données");
         submitBtn.disabled = true;

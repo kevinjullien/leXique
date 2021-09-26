@@ -18,7 +18,6 @@ class adminDataController
     public function __construct(Db $db)
     {
         $this->_db = $db;
-
     }
 
     /**
@@ -271,7 +270,6 @@ class adminDataController
      */
     private function onMotAdditionOrEdition(): void
     {
-//TODO impeaching existing word to be processed done via JS. has to be undone for the edition part
         $motFrominput = new Mot($_POST['libelle'], $_POST['definition']);
         $motFrominput->setSynonymes($this->cleanArrayFromEmptyElements($_POST['synonymes']));
         $motFrominput->setAntonymes($this->cleanArrayFromEmptyElements($_POST['antonymes']));
@@ -283,6 +281,7 @@ class adminDataController
             $motFrominput->setIllustration($this->uploaded_image_treatment('illustration'));
         $motFrominput->setVariantsOrthographiques($this->fetchVariantsOrthographiques());
         if ($_GET['subAction'] == "add") {
+            if ($this->_db->is_libelle_already_taken($_POST['libelle'])) throw new CustomException("Le libellé choisi est déjà pris: " . $motFrominput->getLibelle());
             $this->_db->insert_complete_mot($motFrominput);
         } else if ($_GET['subAction'] == "edit") {
             $motFrominput->setId($_POST['id']);

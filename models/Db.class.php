@@ -842,7 +842,6 @@ class Db
         }
 
         if (!empty($mot)) {
-            //TODO amélioration en une seule requête
             $mot->setSynonymes($this->select_synonymes_libelles($mot->getId()));
             $mot->setAntonymes($this->select_antonymes_libelles($mot->getId()));
             $mot->setChampsLexicaux($this->select_mot_champs_lexicaux_intitules($mot->getId()));
@@ -1959,5 +1958,22 @@ class Db
         }
 
         return $tab;
+    }
+
+    /**
+     * Check if the given libelle is already taken in the Mots table
+     *
+     * @param $libelle
+     * @return bool
+     */
+    public function is_libelle_already_taken($libelle): bool
+    {
+        $query = 'SELECT * FROM lexique_mots WHERE libelle = :libelle';
+
+        $ps = $this->_db->prepare($query);
+        $ps->bindValue(":libelle", $libelle);
+        $ps->execute();
+
+        return $ps->rowcount() != 0;
     }
 }

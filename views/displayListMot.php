@@ -1,6 +1,6 @@
 <section id="contenu">
 
-    <a class="btn btn-default btn-sm" id="topBtn" title="Revenir en début de page"><i class='fas fa-arrow-up'></i></a>
+    <a class="btn btn-default btn-sm" id="topBtn" title="Revenir en début de page">&#8593;</a>
     <section id="alphabetLinks" class="text-center"></section></i></a>
 
     <section class="container-fluid">
@@ -56,4 +56,3 @@
 <script src="<?php echo SCRIPTS_PATH ?>listSelection.js"></script>
 <script src="<?php echo SCRIPTS_PATH ?>goToTopButton.js"></script>
 <script src="<?php echo SCRIPTS_PATH ?>alphabetMenu.js"></script>
-<script src='https://kit.fontawesome.com/a076d05399.js' crossorigin='anonymous'></script>

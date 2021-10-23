@@ -21,9 +21,10 @@
             </thead>
             <tbody>
             <?php if (isset($periodes) && !empty($periodes)) {
+                require_once(SCRIPTS_PATH . "removeAccents.php");
                 $previousLetter = NULL;
                 foreach ($periodes as $i => $per) {
-                    $actualLetter = strtoupper($per->getNom()[0]);
+                    $actualLetter = strtoupper(remove_accents($per->getNom())[0]);
                     if ($actualLetter !== $previousLetter){
                         $previousLetter = $actualLetter;
                         echo '<tr class="letterDivision" id="' . $actualLetter . '" data-aos="flip-left"><th scope="row" colspan="6">' . $actualLetter . '</th></tr>';

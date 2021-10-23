@@ -74,9 +74,10 @@
             </thead>
             <tbody>
             <?php if (isset($mots) && !empty($mots)) {
+                require_once(SCRIPTS_PATH . "removeAccents.php");
                 $previousLetter = NULL;
                 foreach ($mots as $i => $mot) {
-                    $actualLetter = strtoupper($mot->getLibelle()[0]);
+                    $actualLetter = strtoupper(remove_accents($mot->getLibelle()))[0];
                     if ($actualLetter !== $previousLetter){
                         $previousLetter = $actualLetter;
                         echo '<tr class="letterDivision" id="' . $actualLetter . '" data-aos="flip-left"><th scope="row" colspan="9">' . $actualLetter . '</th></tr>';

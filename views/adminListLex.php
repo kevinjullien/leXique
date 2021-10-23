@@ -18,9 +18,10 @@
             </thead>
             <tbody>
             <?php if (isset($champsLexicaux) && !empty($champsLexicaux)) {
+                require_once(SCRIPTS_PATH . "removeAccents.php");
                 $previousLetter = NULL;
                 foreach ($champsLexicaux as $i => $lex) {
-                    $actualLetter = strtoupper($lex->getIntitule()[0]);
+                    $actualLetter = strtoupper(remove_accents($lex->getIntitule())[0]);
                     if ($actualLetter !== $previousLetter){
                         $previousLetter = $actualLetter;
                         echo '<tr class="letterDivision" id="' . $actualLetter . '" data-aos="flip-left"><th scope="row" colspan="4">' . $actualLetter . '</th></tr>';

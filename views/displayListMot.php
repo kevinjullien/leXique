@@ -22,10 +22,11 @@
                 <input name="action" value="display" hidden>
                 <input name="scope" value="words" hidden>
                 <?php if (isset($mots) && !empty($mots)) {
+                    require_once(SCRIPTS_PATH . "removeAccents.php");
                     $n = 0;
                     $previousLetter = NULL;
                     foreach ($mots as $libelle => $definition) {
-                        $actualLetter = strtoupper($libelle[0]);
+                        $actualLetter = strtoupper(remove_accents($libelle))[0];
                         if ($actualLetter !== $previousLetter){
                             $previousLetter = $actualLetter;
                             echo '<tr class="letterDivision" id="' . $actualLetter . '" id="' . $actualLetter . '" data-aos="flip-left"><th scope="row" colspan="3">' . $actualLetter . '</th></tr>';

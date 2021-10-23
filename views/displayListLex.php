@@ -22,9 +22,10 @@
                 <input name="action" value="display" hidden>
                 <input name="scope" value="lex" hidden>
                 <?php
+                require_once(SCRIPTS_PATH . "removeAccents.php");
                 $previousLetter = NULL;
                 foreach ($champsLexicaux as $i => $lex) {
-                    $actualLetter = strtoupper($lex->getIntitule()[0]);
+                    $actualLetter = strtoupper(remove_accents($lex->getIntitule())[0]);
                     if ($actualLetter !== $previousLetter){
                         $previousLetter = $actualLetter;
                         echo '<tr class="letterDivision" id="' . $actualLetter . '" data-aos="flip-left"><th scope="row" colspan="3">' . $actualLetter . '</th></tr>';

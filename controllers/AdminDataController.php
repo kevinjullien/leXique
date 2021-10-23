@@ -286,13 +286,23 @@ class adminDataController
         } else if ($_GET['subAction'] == "edit") {
             $motFrominput->setId($_POST['id']);
             $motFromDb = $this->_db->select_mot_by_id($motFrominput->getId());
+            if (empty($motFromDb)) throw new CustomException("Le mot n'existe pas", 400);
+
             if (!empty($motFrominput->getIllustration()) && !empty($motFromDb->getIllustration())) {
                 $this->deleteFileFromServer($motFromDb->getIllustration());
             }
             $this->_db->update_complete_mot($motFrominput);
-            if (empty($motFrominput->getIllustration()) && isset($_POST['illustrationToDelete'])) {
-                $this->_db->remove_illustration_of_mot($motFrominput->getId());
-                $this->deleteFileFromServer($motFromDb->getIllustration());
+            if (empty($motFrominput->getIllustration())) {
+                if (isset($_POST['illustrationToDelete'])) {
+                    $this->_db->remove_illustration_of_mot($motFrominput->getId());
+                    $this->deleteFileFromServer($motFromDb->getIllustration());
+                } else if (!empty($motFromDb->getIllustration()) && $motFromDb->getLibelle() !== $motFrominput->getLibelle()) {
+                    $destination = "illustration_" . $motFrominput->getLibelle() . ".png";
+                    if (rename(FILES_PATH . $motFromDb->getIllustration(), FILES_PATH . $destination)) {
+                        $motFrominput->setIllustration($destination);
+                        $this->_db->update_mot_illustration($motFrominput);
+                    }
+                }
             }
         }
         if (!empty($this->_error)) {

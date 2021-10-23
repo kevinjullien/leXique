@@ -2102,4 +2102,22 @@ class Db
 
         return $this->complete_mots_after_select_on_lexique_mots($ps);
     }
+
+    /**
+     * Edit the illustration of a Mot with the given Mot.
+     *
+     * @param Mot $updatedMot containing at least the ID and the illustration's name
+     * @return bool
+     */
+    public function update_mot_illustration(Mot $updatedMot): bool
+    {
+        $query = 'UPDATE lexique_mots 
+                  SET illustration = :illustration WHERE id = :id';
+
+        $ps = $this->_db->prepare($query);
+        $ps->bindValue(':illustration', $updatedMot->getIllustration());
+        $ps->bindValue(':id', $updatedMot->getId());
+
+        return $ps->execute();
+    }
 }

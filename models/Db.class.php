@@ -12,9 +12,11 @@ class Db
 
     private function __construct()
     {
-        set_error_handler(/**
-         * @throws ErrorException
-         */ function ($errno, $errstr, $errfile, $errline) {
+        set_error_handler(
+            /**
+             * @throws ErrorException
+             */
+            function ($errno, $errstr, $errfile, $errline) {
             // error was suppressed with the @-operator
             if (0 === error_reporting()) {
                 return false;
@@ -842,7 +844,6 @@ class Db
         }
 
         if (!empty($mot)) {
-            //TODO amélioration en une seule requête
             $mot->setSynonymes($this->select_synonymes_libelles($mot->getId()));
             $mot->setAntonymes($this->select_antonymes_libelles($mot->getId()));
             $mot->setChampsLexicaux($this->select_mot_champs_lexicaux_intitules($mot->getId()));
@@ -1460,6 +1461,24 @@ class Db
     }
 
     /**
+     * Fetch the list of Mot with an invalid definition with every attribute filled if the data exists.
+     *
+     * @return array of Mots
+     */
+    public function select_complete_mots_with_invalid_definition(): array
+    {
+        $query = 'SELECT id, libelle, definition, illustration FROM lexique_mots 
+                    WHERE definition IS NULL OR !STRCMP(definition, :invalid) 
+                    ORDER BY 2';
+
+        $ps = $this->_db->prepare($query);
+        $ps->bindValue(':invalid', self::$invalidString);
+        $ps->execute();
+
+        return $this->complete_mots_after_select_on_lexique_mots($ps);
+    }
+
+    /**
      * Complete multiple Mots after having executed 'SELECT id, libelle, definition, illustration FROM lexique_mots ...'.
      *
      * @param $ps PDOStatement the prepared query after execution.
@@ -1959,5 +1978,148 @@ class Db
         }
 
         return $tab;
+    }
+
+    /**
+     * Check if the given libelle is already taken in the Mots table
+     *
+     * @param $libelle
+     * @return bool
+     */
+    public function is_libelle_already_taken($libelle): bool
+    {
+        $query = 'SELECT * FROM lexique_mots WHERE libelle = :libelle';
+
+        $ps = $this->_db->prepare($query);
+        $ps->bindValue(":libelle", $libelle);
+        $ps->execute();
+
+        return $ps->rowcount() != 0;
+    }
+
+    /**
+     * Fetch the list of Mot with no Synonyme with every attribute filled if the data exists.
+     *
+     * @return array of Mots
+     */
+    public function select_complete_mots_with_no_synonyme(): array
+    {
+        $query = 'SELECT m.id, m.libelle, m.definition, m.illustration
+                    FROM lexique_mots m
+                    WHERE m.id NOT IN (SELECT DISTINCT mot_a FROM lexique_synonymes where mot_a = m.id OR mot_b = m.id)
+                    ORDER BY 2';
+
+        $ps = $this->_db->prepare($query);
+        $ps->execute();
+
+        return $this->complete_mots_after_select_on_lexique_mots($ps);
+    }
+
+    /**
+     * Fetch the list of Mot with no Antonyme with every attribute filled if the data exists.
+     *
+     * @return array of Mots
+     */
+    public function select_complete_mots_with_no_antonyme(): array
+    {
+        $query = 'SELECT m.id, m.libelle, m.definition, m.illustration
+                    FROM lexique_mots m
+                    WHERE m.id NOT IN (SELECT DISTINCT mot_a FROM lexique_antonymes where mot_a = m.id OR mot_b = m.id)
+                    ORDER BY 2';
+
+        $ps = $this->_db->prepare($query);
+        $ps->execute();
+
+        return $this->complete_mots_after_select_on_lexique_mots($ps);
+    }
+
+    /**
+     * Fetch the list of Mot with no Champ Lexical with every attribute filled if the data exists.
+     *
+     * @return array of Mots
+     */
+    public function select_complete_mots_with_no_champ_lexical(): array
+    {
+        $query = 'SELECT m.id, m.libelle, m.definition, m.illustration
+                    FROM lexique_mots m
+                    WHERE m.id NOT IN (SELECT DISTINCT mot FROM lexique_vue_mot_champ_lexical where mot = m.id)
+                    ORDER BY 2';
+
+        $ps = $this->_db->prepare($query);
+        $ps->execute();
+
+        return $this->complete_mots_after_select_on_lexique_mots($ps);
+    }
+
+    /**
+     * Fetch the list of Mot with no Siecle with every attribute filled if the data exists.
+     *
+     * @return array of Mots
+     */
+    public function select_complete_mots_with_no_siecle(): array
+    {
+        $query = 'SELECT m.id, m.libelle, m.definition, m.illustration
+                    FROM lexique_mots m
+                    WHERE m.id NOT IN (SELECT DISTINCT mot FROM lexique_vue_mot_siecle where mot = m.id)
+                    ORDER BY 2';
+
+        $ps = $this->_db->prepare($query);
+        $ps->execute();
+
+        return $this->complete_mots_after_select_on_lexique_mots($ps);
+    }
+
+    /**
+     * Fetch the list of Mot with no Periode with every attribute filled if the data exists.
+     *
+     * @return array of Mots
+     */
+    public function select_complete_mots_with_no_periode(): array
+    {
+        $query = 'SELECT m.id, m.libelle, m.definition, m.illustration
+                    FROM lexique_mots m
+                    WHERE m.id NOT IN (SELECT DISTINCT mot FROM lexique_vue_mot_periode where mot = m.id)
+                    ORDER BY 2';
+
+        $ps = $this->_db->prepare($query);
+        $ps->execute();
+
+        return $this->complete_mots_after_select_on_lexique_mots($ps);
+    }
+
+    /**
+     * Fetch the list of Mot with no Reference with every attribute filled if the data exists.
+     *
+     * @return array of Mots
+     */
+    public function select_complete_mots_with_no_reference(): array
+    {
+        $query = 'SELECT m.id, m.libelle, m.definition, m.illustration
+                    FROM lexique_mots m
+                    WHERE m.id NOT IN (SELECT DISTINCT mot FROM lexique_vue_mot_reference where mot = m.id)
+                    ORDER BY 2';
+
+        $ps = $this->_db->prepare($query);
+        $ps->execute();
+
+        return $this->complete_mots_after_select_on_lexique_mots($ps);
+    }
+
+    /**
+     * Edit the illustration of a Mot with the given Mot.
+     *
+     * @param Mot $updatedMot containing at least the ID and the illustration's name
+     * @return bool
+     */
+    public function update_mot_illustration(Mot $updatedMot): bool
+    {
+        $query = 'UPDATE lexique_mots 
+                  SET illustration = :illustration WHERE id = :id';
+
+        $ps = $this->_db->prepare($query);
+        $ps->bindValue(':illustration', $updatedMot->getIllustration());
+        $ps->bindValue(':id', $updatedMot->getId());
+
+        return $ps->execute();
     }
 }

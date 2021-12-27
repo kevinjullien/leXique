@@ -20,7 +20,7 @@
 </head>
 
 <body>
-<header class="sticky-top">
+<header class="sticky-top" id="header">
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <section class="navbar-collapse collapse w-100 order-1 order-lg-0 dual-collapse2">
             <ul class="navbar-nav mr-auto">

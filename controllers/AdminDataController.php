@@ -18,7 +18,6 @@ class adminDataController
     public function __construct(Db $db)
     {
         $this->_db = $db;
-
     }
 
     /**
@@ -42,11 +41,11 @@ class adminDataController
         } else if (isset($_GET['scope']) && $_GET['scope'] === "lex"
             && isset($_GET['subAction']) && $_GET['subAction'] === "edit") {// -> displaying the Lex edition form
             $chosenLex = $this->_db->select_complete_champ_lexical_by_intitule($_GET['lex']);
-            if (empty($chosenLex)) throw new CustomException("AdminDataController: champ lexical invalide", 400);
+            if (empty($chosenLex)) throw new CustomException("AdminDataController: champ lexical '". $_GET['lex'] . "' invalide", 400);
         } else if (isset($_GET['scope']) && $_GET['scope'] === "per"
             && isset($_GET['subAction']) && $_GET['subAction'] === "edit") {// -> displaying the Pe edition form
             $chosenPer = $this->_db->select_complete_periode_by_nom($_GET['per']);
-            if (empty($chosenPer)) throw new CustomException("AdminDataController: période invalide", 400);
+            if (empty($chosenPer)) throw new CustomException("AdminDataController: période '" . $_GET['per'] . "' invalide", 400);
         } else if (isset($_POST['libelle'])) {// -> sending the completed word form (add or edit)
             $this->onMotAdditionOrEdition();
         } else { // displaying the Mot form
@@ -59,7 +58,7 @@ class adminDataController
                         $siecles = $this->_db->select_siecles();
                         $typesVariants = $this->_db->select_types_variants_orthographiques_libelles();
                         $chosenMot = $this->_db->select_complete_mot_by_libelle($_GET['word']);
-                        if (empty($chosenMot)) throw new CustomException("AdminDataController: mot invalide", 400);
+                        if (empty($chosenMot)) throw new CustomException("AdminDataController: mot '" . $_GET['word'] . "' invalide", 400);
                     } else {
                         throw new CustomException("AdminDataController: aucun mot fourni pour l'édition", 400);
                     }
@@ -69,7 +68,7 @@ class adminDataController
                     $siecles = $this->_db->select_siecles();
                     $typesVariants = $this->_db->select_types_variants_orthographiques_libelles();
                 } else {
-                    throw new CustomException("AdminDataController: subAction invalide", 400);
+                    throw new CustomException("AdminDataController: subAction '" . $_GET['subAction'] . "' invalide", 400);
                 }
             } else {
                 throw new CustomException("AdminDataController: subAction absent", 400);
@@ -271,7 +270,6 @@ class adminDataController
      */
     private function onMotAdditionOrEdition(): void
     {
-//TODO impeaching existing word to be processed done via JS. has to be undone for the edition part
         $motFrominput = new Mot($_POST['libelle'], $_POST['definition']);
         $motFrominput->setSynonymes($this->cleanArrayFromEmptyElements($_POST['synonymes']));
         $motFrominput->setAntonymes($this->cleanArrayFromEmptyElements($_POST['antonymes']));
@@ -283,17 +281,28 @@ class adminDataController
             $motFrominput->setIllustration($this->uploaded_image_treatment('illustration'));
         $motFrominput->setVariantsOrthographiques($this->fetchVariantsOrthographiques());
         if ($_GET['subAction'] == "add") {
+            if ($this->_db->is_libelle_already_taken($_POST['libelle'])) throw new CustomException("Le libellé choisi est déjà pris: " . $motFrominput->getLibelle());
             $this->_db->insert_complete_mot($motFrominput);
         } else if ($_GET['subAction'] == "edit") {
             $motFrominput->setId($_POST['id']);
             $motFromDb = $this->_db->select_mot_by_id($motFrominput->getId());
+            if (empty($motFromDb)) throw new CustomException("Le mot n'existe pas", 400);
+
             if (!empty($motFrominput->getIllustration()) && !empty($motFromDb->getIllustration())) {
                 $this->deleteFileFromServer($motFromDb->getIllustration());
             }
             $this->_db->update_complete_mot($motFrominput);
-            if (empty($motFrominput->getIllustration()) && isset($_POST['illustrationToDelete'])) {
-                $this->_db->remove_illustration_of_mot($motFrominput->getId());
-                $this->deleteFileFromServer($motFromDb->getIllustration());
+            if (empty($motFrominput->getIllustration())) {
+                if (isset($_POST['illustrationToDelete'])) {
+                    $this->_db->remove_illustration_of_mot($motFrominput->getId());
+                    $this->deleteFileFromServer($motFromDb->getIllustration());
+                } else if (!empty($motFromDb->getIllustration()) && $motFromDb->getLibelle() !== $motFrominput->getLibelle()) {
+                    $destination = "illustration_" . $motFrominput->getLibelle() . ".png";
+                    if (rename(FILES_PATH . $motFromDb->getIllustration(), FILES_PATH . $destination)) {
+                        $motFrominput->setIllustration($destination);
+                        $this->_db->update_mot_illustration($motFrominput);
+                    }
+                }
             }
         }
         if (!empty($this->_error)) {

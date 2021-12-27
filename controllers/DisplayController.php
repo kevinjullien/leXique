@@ -21,7 +21,7 @@ class DisplayController
                 $mots = $this->_db->select_mots_with_libelle_and_definition_with_valid_definition();
                 if (isset($_GET['word'])) {
                     $chosenMot = $this->_db->select_complete_mot_by_libelle($_GET['word']);
-                    if (empty($chosenMot)) throw new CustomException("Display: mot invalide", 400);
+                    if (empty($chosenMot)) throw new CustomException("Display: mot '" . $_GET['word'] . "' invalide", 400);
                     $this->addLinksToKnownWordsInWordDescription($mots, $chosenMot);
                     $champsLexicaux = $this->_db->select_valid_champs_lexicaux_with_intitule_and_description();
                     $this->addLinksToValidChampsLexicaux($champsLexicaux, $chosenMot);
@@ -36,7 +36,7 @@ class DisplayController
                 $champsLexicaux = $this->_db->select_valid_champs_lexicaux_with_id_intitule_and_description();
                 if (isset($_GET['lex'])) {
                     $chosenLex = $this->_db->select_complete_champ_lexical_by_intitule($_GET['lex']);
-                    if (empty($chosenLex)) throw new CustomException("Display: champ lexical invalide", 400);
+                    if (empty($chosenLex)) throw new CustomException("Display: champ lexical '" . $_GET['lex'] . "' invalide", 400);
                     $mots = $this->_db->select_mots_with_libelle_and_definition_with_valid_definition();
                     require_once(VIEW_PATH . 'displayChosenLex.php');
                 } else {
@@ -46,14 +46,14 @@ class DisplayController
                 $periodes = $this->_db->select_periodes_with_id_nom_debut_fin_and_description();
                 if (isset($_GET['per'])) {
                     $chosenPer = $this->_db->select_complete_periode_by_nom($_GET['per']);
-                    if (empty($chosenPer)) throw new CustomException("Display: Période invalide", 400);
+                    if (empty($chosenPer)) throw new CustomException("Display: Période '" . $_GET['per'] . "' invalide", 400);
                     $mots = $this->_db->select_mots_with_libelle_and_definition_with_valid_definition();
                     require_once(VIEW_PATH . 'displayChosenPer.php');
                 } else {
                     require_once(VIEW_PATH . 'displayListPer.php');
                 }
             } else {
-                throw new CustomException("Display: scope invalide -> '" . $_GET['scope'] . "'", 400);
+                throw new CustomException("Display: scope '" . $_GET['scope'] . "' invalide", 400);
             }
         } else {
             throw new CustomException("Display: scope absent", 400);

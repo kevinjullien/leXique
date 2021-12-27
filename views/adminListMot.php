@@ -1,4 +1,9 @@
 <section id="contenu">
+
+    <a class="btn btn-default btn-sm" id="topBtn" title="Revenir en début de page">&#8593;</a>
+    <section id="alphabetLinks" class="text-center"></section></i></a>
+    <section id="alphabetLinks" class="text-center"></section>
+
     <section class="container-fluid">
         <form action="/index.php?action=adminList&scope=words" method="get">
             <input name="action" value="adminList" hidden>
@@ -69,12 +74,13 @@
             </thead>
             <tbody>
             <?php if (isset($mots) && !empty($mots)) {
+                require_once(SCRIPTS_PATH . "removeAccents.php");
                 $previousLetter = NULL;
                 foreach ($mots as $i => $mot) {
-                    $actualLetter = strtoupper($mot->getLibelle()[0]);
+                    $actualLetter = strtoupper(remove_accents($mot->getLibelle()))[0];
                     if ($actualLetter !== $previousLetter){
                         $previousLetter = $actualLetter;
-                        echo '<tr class="letterDivision" data-aos="flip-left"><th scope="row" colspan="9">' . $actualLetter . '</th></tr>';
+                        echo '<tr class="letterDivision" id="' . $actualLetter . '" data-aos="flip-left"><th scope="row" colspan="9">' . $actualLetter . '</th></tr>';
                     }?>
                     <tr class="trays" <?php echo $i%2 == 0 ? 'data-aos="fade-up-right"' : 'data-aos="fade-up-left"' ?> data-data="<?php echo $mot->getLibelle() ?>">
                         <th scope="row"><?php echo $mot->getLibelle(); ?></th>
@@ -135,7 +141,6 @@
             ?>
             </tbody>
         </table>
-        <script src="<?php echo SCRIPTS_PATH ?>searchBar.js"></script>
-        <script src="<?php echo SCRIPTS_PATH ?>listSelection.js"></script>
     </section>
 </section>
+<?php require_once(VIEW_PATH . "scriptsCallsListings.php");

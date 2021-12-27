@@ -90,6 +90,8 @@ class ErrorController
         if (!empty($this->_message)) {
             $message = $message . "\n$this->_message";
         }
+
+        $message = htmlspecialchars($message);
         require_once(VIEW_PATH . 'errorPage.php');
     }
 }

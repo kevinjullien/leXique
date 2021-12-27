@@ -1,8 +1,7 @@
 <section id="contenu">
     <div class="alert alert-danger" role="alert">
-        La taille maximale des fichiers uploadés est encore à déterminer.<br>
-        Les fichiers trop gros ne seront simplement pas uploadés.<br>
-        Une vérification est donc nécessaire après chaque ajout et modification.
+        La taille maximale d'un fichier uploadé est de <strong>128Mo</strong>.<br>
+        La taille maximale d'un formulaire complet est de <strong>130Mo</strong>.<br>
     </div>
     <form action="/index.php?action=adminData&scope=words&subAction=<?php echo isset($chosenMot) ? "edit" : "add" ?>"
           method="post" id="dataForm" enctype="multipart/form-data">

@@ -1,4 +1,8 @@
 <section id="contenu">
+
+    <a class="btn btn-default btn-sm" id="topBtn" title="Revenir en début de page">&#8593;</a>
+    <section id="alphabetLinks" class="text-center"></section></i></a>
+
     <section class="container-fluid">
         <input class="form-control" id="searchBar" type="text" placeholder="Rechercher">
     </section>
@@ -18,13 +22,14 @@
                 <input name="action" value="display" hidden>
                 <input name="scope" value="words" hidden>
                 <?php if (isset($mots) && !empty($mots)) {
+                    require_once(SCRIPTS_PATH . "removeAccents.php");
                     $n = 0;
                     $previousLetter = NULL;
                     foreach ($mots as $libelle => $definition) {
-                        $actualLetter = strtoupper($libelle[0]);
+                        $actualLetter = strtoupper(remove_accents($libelle))[0];
                         if ($actualLetter !== $previousLetter){
                             $previousLetter = $actualLetter;
-                            echo '<tr class="letterDivision" data-aos="flip-left"><th scope="row" colspan="3">' . $actualLetter . '</th></tr>';
+                            echo '<tr class="letterDivision" id="' . $actualLetter . '" id="' . $actualLetter . '" data-aos="flip-left"><th scope="row" colspan="3">' . $actualLetter . '</th></tr>';
                         }?>
                         <tr class="trays" <?php echo $n++%2 == 0 ? 'data-aos="fade-up-right"' : 'data-aos="fade-up-left"' ?> data-data="<?php echo $libelle ?>">
                             <th scope="row"><?php echo $libelle; ?></th>
@@ -48,5 +53,4 @@
         </table>
     </section>
 </section>
-<script src="<?php echo SCRIPTS_PATH ?>searchBar.js"></script>
-<script src="<?php echo SCRIPTS_PATH ?>listSelection.js"></script>
+<?php require_once(VIEW_PATH . "scriptsCallsListings.php");
